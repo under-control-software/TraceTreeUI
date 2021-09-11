@@ -9,7 +9,7 @@ const app = express();
 app.get("/api/customers", cors(), (req, res) => {
     const customers = [
         { id: 1, firstName: "John", lastName: "Doe" },
-        { id: 2, firstName: "Brad", lastName: "Traversy Abc" },
+        { id: 2, firstName: "Brad", lastName: "Traversy" },
         { id: 3, firstName: "Mary", lastName: "Swanson" },
     ];
 

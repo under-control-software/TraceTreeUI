@@ -1,14 +1,15 @@
 # React Express Starter Pack
 
-> Create full stack apps with React and Express. Run your client and server with a single command. 
+> Heroku deployable full stack React app boilerplate
 
 ### Redux Version
+
 This version does not include Redux
-[Click Here For Redux Version](https://github.com/bradtraversy/react_redux_express_starter) 
+[Click Here For Redux Version](https://github.com/bradtraversy/react_redux_express_starter)
 
 ## Quick Start
 
-``` bash
+```bash
 # Install dependencies for server
 npm install
 
