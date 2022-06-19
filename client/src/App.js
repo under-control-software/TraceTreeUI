@@ -1,21 +1,45 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import Customers from "./components/customers";
 
 class App extends Component {
-    render() {
-        return (
-            <div className='App'>
-                <header className='App-header'>
-                    <img src={logo} className='App-logo' alt='logo' />
-                    <h1 className='App-title'>React Express Starter</h1>
-                </header>
-
-                <Customers />
-            </div>
-        );
-    }
+  constructor() {
+    super();
+    this.state = {
+      message: "Click on the button to initiate",
+    };
+  }
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <h1 className="App-title">TraceTree</h1>
+        </header>
+        <br></br>
+        <br></br>
+        <button
+          onClick={() => {
+            this.setState({
+              message: "Please wait...",
+            });
+            fetch("/api/generategraph")
+              .then((res) => res.json())
+              .then((data) => {
+                this.setState({
+                  message: data.response,
+                });
+              });
+          }}
+        >
+          Run
+        </button>
+        <br></br>
+        <br></br>
+        <div style={{ textAlign: "center", fontSize: "1.2em" }}>
+          {this.state.message}
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
