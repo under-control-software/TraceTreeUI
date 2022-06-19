@@ -1,11 +1,4 @@
-# React Express Starter Pack
-
-> Heroku deployable full stack React app boilerplate
-
-### Redux Version
-
-This version does not include Redux
-[Click Here For Redux Version](https://github.com/bradtraversy/react_redux_express_starter)
+# TraceTreeUI
 
 ## Quick Start
 
@@ -27,3 +20,6 @@ npm run client
 
 # Server runs on http://localhost:5000 and client on http://localhost:3000
 ```
+
+## Note
+This app is taking longer than the plain Node.js app.
