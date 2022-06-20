@@ -57,28 +57,17 @@ class TraceTree {
     }
 
     const dataObj = [];
-    results.forEach((value, ind) => {
-      const url = "http://localhost:7080" + value.file.url;
-      value.lineMatches.forEach((link, i) => {
-        dataObj.push({
-          url: url + "?L" + (link.lineNumber + 1),
-          preview: link.preview,
-          file: value.file.name,
-          fileUrl: url,
-          funcName: funcName,
-          lineNumber: link.lineNumber,
-        });
-      });
+    results.forEach(value => {
+      dataObj.push({
+        url: "http://localhost:7080" + value.file.url + "?L" + (value.lineMatches[0].lineNumber + 1),
+        preview: value.lineMatches[0].preview,
+        file: value.file.name,
+        fileUrl: "http://localhost:7080" + value.file.url,
+        funcName: funcName,
+        lineNumber: value.lineMatches[0].lineNumber,
+        code: value.lineMatches.map(line => line.preview)
+      })
     });
-
-    // const url =
-    //   "http://localhost:7080" +
-    //   results[0].file.url +
-    //   "?L" +
-    //   (results[0].lineMatches[0].lineNumber + 1);
-
-    // console.log(results);
-    // console.log("----------");
 
     const funcCalled = getFunctionCalled(results);
 
