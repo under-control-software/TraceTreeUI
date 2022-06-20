@@ -143,8 +143,53 @@ class App extends Component {
       alert("Please select an option");
       return;
     }
-    console.log(this.state.option);
+    // console.log(this.state.option);
     // TODO: write the remaining logic here after the user selects a match
+    fetch("/api/expandgraph", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        option: JSON.stringify(this.state.option),
+        adjList: JSON.stringify(Array.from(this.state.adjList.entries())),
+        data: JSON.stringify(Array.from(this.state.data.entries())),
+        registry: JSON.stringify(Array.from(this.state.registry.entries())),
+        reverseReg: JSON.stringify(Array.from(this.state.reverseReg.entries())),
+      }),
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        this.setState({
+          message:
+            "Graph Generated. Click on the nodes to uncover more details.",
+          adjList: new Map(JSON.parse(data.adjList)),
+          registry: new Map(JSON.parse(data.registry)),
+          data: new Map(JSON.parse(data.data)),
+          reverseReg: new Map(JSON.parse(data.reverseReg)),
+        });
+        const nodes = {
+          nodes: [],
+          links: [],
+        };
+        this.state.adjList.forEach((value, key) => {
+          nodes.nodes.push({
+            id: key,
+            name: this.state.reverseReg.get(key),
+            data: this.state.data.get(key),
+            start: this.state.start === key,
+          });
+          value.map((e) => {
+            nodes.links.push({ source: key, target: e });
+          });
+        });
+        this.setState({
+          nodes: nodes,
+        });
+      });
   };
 
   render() {

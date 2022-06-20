@@ -20,7 +20,7 @@ app.post("/api/generategraph", cors(), async (req, res) => {
 
 // @ts-ignore
 app.post("/api/expandgraph", cors(), async (req, res) => {
-  const result = await expand(req.body.name, 0, {});
+  const result = await expand(req.body, 0);
   res.json(result);
 });
 
@@ -36,9 +36,13 @@ const main = async (funcName, paramCount) => {
   return await ds.run(funcName, paramCount);
 };
 
-const expand = async (funcName, paramCount, funcObj) => {
-  let ds = new TraceTree();
-  return await ds.expand(funcName, paramCount, funcObj);
+const expand = async (obj, paramCount) => {
+  let ds = new TraceTree(obj);
+  return await ds.expand(
+    JSON.parse(obj.option).funcName,
+    paramCount,
+    JSON.parse(obj.option)
+  );
 };
 
 const port = process.env.PORT || 5000;

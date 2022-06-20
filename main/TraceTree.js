@@ -4,12 +4,19 @@ const { nanoid } = require("nanoid");
 const { getBody, getFunctionCalled } = require("../utils/getBody");
 
 class TraceTree {
-  constructor() {
-    this.adjList = new Map();
-    this.data = new Map();
-    this.registry = new Map();
-    this.reverseReg = new Map();
-    this.start = null;
+  constructor(obj = null) {
+    if (!obj) {
+      this.adjList = new Map();
+      this.data = new Map();
+      this.registry = new Map();
+      this.reverseReg = new Map();
+      this.start = null;
+    } else {
+      this.adjList = new Map(JSON.parse(obj.adjList));
+      this.registry = new Map(JSON.parse(obj.registry));
+      this.data = new Map(JSON.parse(obj.data));
+      this.reverseReg = new Map(JSON.parse(obj.reverseReg));
+    }
   }
 
   async run(funcName, paramCount) {
@@ -25,27 +32,21 @@ class TraceTree {
 
   async expand(funcName, paramCount, funcObj) {
     const id = nanoid();
-    this.start = id;
-    parent && this.adjList?.get(parent).push(id);
+    this.start = id; // TODO: do we need start in expand graph?
+    // parent && this.adjList?.get(parent).push(id);
     this.registry?.set(funcName, id);
     this.reverseReg?.set(id, funcName);
     this.adjList?.set(id, []);
     const funcCalled = getFunctionCalled(funcObj);
     for (var func of funcCalled) {
-      await this.generateTree(
-        func.funcName,
-        func.paramCount,
-        id,
-        false,
-        0
-      );
+      await this.generateTree(func.funcName, func.paramCount, id, false, 0);
     }
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
       registry: JSON.stringify(Array.from(this.registry.entries())),
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-      start: this.start,
+      start: this.start, // we can get rid of start
     };
   }
 
@@ -77,29 +78,33 @@ class TraceTree {
     this.adjList?.set(id, []);
 
     let results = await getBody(funcName, paramCount);
-    console.log(funcName, results);
+    // console.log(funcName, results);
     if (!results || results.length === 0) {
       return;
     }
 
     const dataObj = [];
-    results.forEach(value => {
+    results.forEach((value) => {
       dataObj.push({
-        url: "http://localhost:7080" + value.file.url + "?L" + (value.lineMatches[0].lineNumber + 1),
+        url:
+          "http://localhost:7080" +
+          value.file.url +
+          "?L" +
+          (value.lineMatches[0].lineNumber + 1),
         preview: value.lineMatches[0].preview,
         file: value.file.name,
         fileUrl: "http://localhost:7080" + value.file.url,
         funcName: funcName,
         lineNumber: value.lineMatches[0].lineNumber,
-        code: value.lineMatches.map(line => line.preview)
-      })
+        code: value.lineMatches.map((line) => line.preview),
+      });
     });
 
     this.data?.set(id, dataObj);
     if (dataObj.length > 1) {
       return;
     }
-  
+
     const funcCalled = getFunctionCalled(dataObj[0]);
 
     for (var func of funcCalled) {
