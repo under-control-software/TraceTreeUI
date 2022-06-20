@@ -12,6 +12,7 @@ const app = express();
 var jsonParser = bodyParser.json();
 app.use(jsonParser);
 
+// @ts-ignore
 app.post("/api/generategraph", cors(), async (req, res) => {
   const result = await main(req.body.name);
   res.json(result);

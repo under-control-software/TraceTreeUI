@@ -1,7 +1,7 @@
 //@ts-check
 
 const { nanoid } = require("nanoid");
-const { tracetree } = require("../utils/getBody");
+const { getBody, getFunctionCalled } = require("../utils/getBody");
 
 class TraceTree {
   constructor() {
@@ -43,10 +43,22 @@ class TraceTree {
     parent && this.adjList?.get(parent).push(id);
     this.registry?.set(funcName, id);
     this.reverseReg?.set(id, funcName);
-    this.adjList?.set(id, [id]);
-    let result = await tracetree(funcName);
-    this.data?.set(id, result.url);
-    for (var func of result.funcCalled) {
+    this.adjList?.set(id, [id]); // TODO: why [id] instead of [] ?
+
+    let results = await getBody(funcName);
+    // console.log(results);
+    if (!results || results.length === 0) {
+      return ;
+    }
+    const url =
+    "http://localhost:7080" +
+    results[0].file.url +
+    "?L" +
+    (results[0].lineMatches[0].lineNumber + 1);
+    const funcCalled = getFunctionCalled(results);
+    
+    this.data?.set(id, url);
+    for (var func of funcCalled) {
       await this.generateTree(func, id, false, depth + 1);
     }
   }
