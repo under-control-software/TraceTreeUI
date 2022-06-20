@@ -13,8 +13,8 @@ class TraceTree {
     this.x = 0;
   }
 
-  async run(funcName) {
-    await this.generateTree(funcName, "", true);
+  async run(funcName, paramCount) {
+    await this.generateTree(funcName, paramCount, "", true);
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
@@ -24,8 +24,14 @@ class TraceTree {
     };
   }
 
-  async generateTree(funcName, parent = "", start = false, depth = 0) {
-    if (depth > 1) {
+  async generateTree(
+    funcName,
+    paramCount,
+    parent = "",
+    start = false,
+    depth = 0
+  ) {
+    if (depth > 2) {
       return;
     }
     if (this.registry?.get(funcName)) {
@@ -35,7 +41,7 @@ class TraceTree {
       }
       return;
     }
-    // console.log(funcName);
+
     const id = nanoid();
     if (start) {
       this.start = id;
@@ -45,7 +51,7 @@ class TraceTree {
     this.reverseReg?.set(id, funcName);
     this.adjList?.set(id, [id]); // TODO: why [id] instead of [] ?
 
-    let results = await getBody(funcName);
+    let results = await getBody(funcName, paramCount);
     if (!results || results.length === 0) {
       return;
     }
@@ -82,7 +88,13 @@ class TraceTree {
     }
 
     for (var func of funcCalled) {
-      await this.generateTree(func, id, false, depth + 1);
+      await this.generateTree(
+        func.funcName,
+        func.paramCount,
+        id,
+        false,
+        depth + 1
+      );
     }
   }
 

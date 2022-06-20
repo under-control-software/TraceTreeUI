@@ -1,32 +1,70 @@
 const { fetchQuery } = require("./fetchQuery");
 const { queries } = require("../queries");
 
-// async function tracetree(funcName) {
-//   const res = await getBody(funcName);
-//   // console.log("in trace", res);
-//   const results = res.data.search.results.results;
-//   if (!results || results.length === 0) {
-//     return { url: "", funcCalled: [] };
-//   }
-//   const url =
-//     "http://localhost:7080" +
-//     results[0].file.url +
-//     "?L" +
-//     (results[0].lineMatches[0].lineNumber + 1);
-//   const funcCalled = getFunctionCalled(results);
-//   return { url, funcCalled };
-// }
+async function getBody(funcName, paramCount) {
+  if (!/^[a-zA-Z_]+$/.test(funcName) || paramCount < 0) {
+    return [];
+  }
+  // ':[~[\\s*@?\\w+\\s*]+],'
+  // :[~[\s*@?\w+<?\w*,?\s\w*>?\s*]+]
+  // paramRegex = '';
+  // for (let i = 1; i<paramCount; i++) {
+  //   paramRegex += ':[~[\\s*@?\\w+\\s*]+],';
+  // }
+  // if (paramCount > 0) {
+  //   paramRegex += ':[~[\\s*@?\\w+\\s*]+]';
+  // } else {
+  //   paramRegex += ':[~\\s*]'
+  // }
 
-async function getBody(funcName) {
-  // getFirst(:[~[\s*\w*\s*]+]) {...}
   query = `
     context:global repo:^github.com/spring-projects/spring-framework$ 
-    :[~\\s]${funcName}(...) {...} count:all
-    patternType:structural case:yes
+    :[~\\s]${funcName}(...) {...}
+    patternType:structural lang:Java case:yes count:all
     `;
 
-  const res = await fetchQuery(queries[1], { query: query });
-  return res.data.search.results.results;
+  res = await fetchQuery(queries[1], { query: query });
+  res = res.data.search.results.results;
+  res = res.filter((match) => {
+    return paramCheck(match.lineMatches[0].preview, paramCount, funcName);
+  });
+  return res;
+}
+
+function paramCheck(line, paramCount, funcName) {
+  line = line.substring(line.indexOf(funcName) + funcName.length);
+  let cnt = 0;
+  let enclose = 0;
+  let nonspace = false;
+  let check = false;
+  for (let ch of line) {
+    if (check && ch === ")") {
+      break;
+    }
+    if (check) {
+      if (ch === "<") {
+        enclose++;
+      }
+      if (ch === ">") {
+        enclose--;
+      }
+      if (ch === "," && enclose === 0) {
+        cnt++;
+      }
+      if (ch !== " ") {
+        nonspace = true;
+      }
+    }
+    if (!check && ch === "(") {
+      check = true;
+    }
+  }
+
+  if (!(cnt === 0 && nonspace === false)) {
+    cnt++;
+  }
+
+  return cnt === paramCount;
 }
 
 function getFunctionCalled(funcBody) {
@@ -53,14 +91,36 @@ function parseLine(codeLine) {
     } else if (ch === ")") {
       if (openingBrackets.length != 0) {
         let word = wordEndingAt(codeLine, openingBrackets.at(-1));
+        let paramCount = paramInFunc(codeLine, openingBrackets.at(-1), i);
         if (word !== "") {
-          res.push(word);
+          res.push({ funcName: word, paramCount: paramCount });
         }
         openingBrackets.pop();
       }
     }
   }
-  return [...new Set(res.filter((name) => /^[a-zA-Z_]+$/.test(name)))];
+  return [...new Set(res.filter((func) => /^[a-zA-Z_]+$/.test(func.funcName)))];
+}
+
+function paramInFunc(codeLine, start, end) {
+  let cnt = 0;
+  let enclose = false;
+  let nonspace = false;
+  for (let i = start + 1; i < end; i++) {
+    if (codeLine[i] === "," && enclose === false) {
+      cnt++;
+    }
+    if (codeLine[i] === '"') {
+      enclose = !enclose;
+    }
+    if (codeLine[i] !== " ") {
+      nonspace = true;
+    }
+  }
+  if (!(cnt === 0 && nonspace === false)) {
+    cnt++;
+  }
+  return cnt;
 }
 
 function wordEndingAt(str, index) {
@@ -72,6 +132,5 @@ function wordEndingAt(str, index) {
   return str.substring(0, index);
 }
 
-// exports.tracetree = tracetree;
 exports.getFunctionCalled = getFunctionCalled;
 exports.getBody = getBody;
