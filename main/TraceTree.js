@@ -15,11 +15,17 @@ class TraceTree {
 
   async run(funcName) {
     await this.generateTree(funcName, "", true);
-    this.printTree();
+    return {
+      adjList: JSON.stringify(Array.from(this.adjList.entries())),
+      data: JSON.stringify(Array.from(this.data.entries())),
+      registry: JSON.stringify(Array.from(this.registry.entries())),
+      reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
+      start: this.start,
+    };
   }
 
   async generateTree(funcName, parent = "", start = false, depth = 0) {
-    if (depth > 2) {
+    if (depth > 1) {
       return;
     }
     if (this.registry?.get(funcName)) {

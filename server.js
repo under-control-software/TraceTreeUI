@@ -3,14 +3,18 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const bodyParser = require("body-parser");
 const { TraceTree } = require("./main/TraceTree");
 require("dotenv").config();
 
 const app = express();
 
-app.get("/api/generategraph", cors(), async (req, res) => {
-  await main();
-  res.json({ response: "Done. Check terminal. Click Run to run again." });
+var jsonParser = bodyParser.json();
+app.use(jsonParser);
+
+app.post("/api/generategraph", cors(), async (req, res) => {
+  const result = await main(req.body.name);
+  res.json(result);
 });
 
 if (process.env.NODE_ENV === "production") {
@@ -20,9 +24,9 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const main = async () => {
+const main = async (funcName) => {
   let ds = new TraceTree();
-  await ds.run("getAccessControlAllowCredentials");
+  return await ds.run(funcName);
 };
 
 const port = process.env.PORT || 5000;
