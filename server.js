@@ -14,7 +14,7 @@ app.use(jsonParser);
 
 // @ts-ignore
 app.post("/api/generategraph", cors(), async (req, res) => {
-  const result = await main(req.body.name);
+  const result = await main(req.body.name, 0);
   res.json(result);
 });
 
@@ -25,9 +25,9 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const main = async (funcName) => {
+const main = async (funcName, paramCount) => {
   let ds = new TraceTree();
-  return await ds.run(funcName);
+  return await ds.run(funcName, paramCount);
 };
 
 const port = process.env.PORT || 5000;
