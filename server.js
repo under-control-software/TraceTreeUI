@@ -18,7 +18,11 @@ app.post("/api/generategraph", cors(), async (req, res) => {
   res.json(result);
 });
 
-let ds = new TraceTree();
+// @ts-ignore
+app.post("/api/expandgraph", cors(), async (req, res) => {
+  const result = await expand(req.body.name, 0, {});
+  res.json(result);
+});
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
@@ -28,7 +32,13 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const main = async (funcName, paramCount) => {
+  let ds = new TraceTree();
   return await ds.run(funcName, paramCount);
+};
+
+const expand = async (funcName, paramCount, funcObj) => {
+  let ds = new TraceTree();
+  return await ds.expand(funcName, paramCount, funcObj);
 };
 
 const port = process.env.PORT || 5000;

@@ -68,14 +68,15 @@ function paramCheck(line, paramCount, funcName) {
 }
 
 function getFunctionCalled(funcBody) {
-  if (!funcBody || funcBody.length === 0) {
+  if (!funcBody) {
     return [];
   }
-  // using only first match
-  const value = funcBody[0];
-  value.lineMatches.shift();
-  calledFunctions = value.lineMatches.map((line, _) => {
-    const codeLine = line.preview.trim();
+  
+  const value = funcBody.code;
+  console.log(value);
+  value.shift();
+  calledFunctions = value.map(line => {
+    const codeLine = line.trim();
     return parseLine(codeLine);
   });
   return [].concat(...calledFunctions);

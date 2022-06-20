@@ -10,11 +10,36 @@ class TraceTree {
     this.registry = new Map();
     this.reverseReg = new Map();
     this.start = null;
-    this.x = 0;
   }
 
   async run(funcName, paramCount) {
     await this.generateTree(funcName, paramCount, "", true);
+    return {
+      adjList: JSON.stringify(Array.from(this.adjList.entries())),
+      data: JSON.stringify(Array.from(this.data.entries())),
+      registry: JSON.stringify(Array.from(this.registry.entries())),
+      reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
+      start: this.start,
+    };
+  }
+
+  async expand(funcName, paramCount, funcObj) {
+    const id = nanoid();
+    this.start = id;
+    parent && this.adjList?.get(parent).push(id);
+    this.registry?.set(funcName, id);
+    this.reverseReg?.set(id, funcName);
+    this.adjList?.set(id, []);
+    const funcCalled = getFunctionCalled(funcObj);
+    for (var func of funcCalled) {
+      await this.generateTree(
+        func.funcName,
+        func.paramCount,
+        id,
+        false,
+        0
+      );
+    }
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
@@ -49,9 +74,10 @@ class TraceTree {
     parent && this.adjList?.get(parent).push(id);
     this.registry?.set(funcName, id);
     this.reverseReg?.set(id, funcName);
-    this.adjList?.set(id, [id]); // TODO: why [id] instead of [] ?
+    this.adjList?.set(id, []);
 
     let results = await getBody(funcName, paramCount);
+    console.log(funcName, results);
     if (!results || results.length === 0) {
       return;
     }
@@ -69,12 +95,12 @@ class TraceTree {
       })
     });
 
-    const funcCalled = getFunctionCalled(results);
-
     this.data?.set(id, dataObj);
     if (dataObj.length > 1) {
       return;
     }
+  
+    const funcCalled = getFunctionCalled(dataObj[0]);
 
     for (var func of funcCalled) {
       await this.generateTree(
