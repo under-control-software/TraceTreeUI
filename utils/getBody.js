@@ -60,7 +60,7 @@ function parseLine(codeLine) {
       }
     }
   }
-  return [... new Set(res.filter(name => /^[a-zA-Z_]+$/.test(name)))];
+  return [...new Set(res.filter((name) => /^[a-zA-Z_]+$/.test(name)))];
 }
 
 function wordEndingAt(str, index) {

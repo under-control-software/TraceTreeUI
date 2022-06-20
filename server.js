@@ -18,6 +18,8 @@ app.post("/api/generategraph", cors(), async (req, res) => {
   res.json(result);
 });
 
+let ds = new TraceTree();
+
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
   app.get("*", (req, res) => {
@@ -26,7 +28,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const main = async (funcName) => {
-  let ds = new TraceTree();
   return await ds.run(funcName);
 };
 

@@ -46,18 +46,41 @@ class TraceTree {
     this.adjList?.set(id, [id]); // TODO: why [id] instead of [] ?
 
     let results = await getBody(funcName);
-    // console.log(results);
     if (!results || results.length === 0) {
-      return ;
+      return;
     }
-    const url =
-    "http://localhost:7080" +
-    results[0].file.url +
-    "?L" +
-    (results[0].lineMatches[0].lineNumber + 1);
+
+    const dataObj = [];
+    results.forEach((value, ind) => {
+      const url = "http://localhost:7080" + value.file.url;
+      value.lineMatches.forEach((link, i) => {
+        dataObj.push({
+          url: url + "?L" + (link.lineNumber + 1),
+          preview: link.preview,
+          file: value.file.name,
+          fileUrl: url,
+          funcName: funcName,
+          lineNumber: link.lineNumber,
+        });
+      });
+    });
+
+    // const url =
+    //   "http://localhost:7080" +
+    //   results[0].file.url +
+    //   "?L" +
+    //   (results[0].lineMatches[0].lineNumber + 1);
+
+    // console.log(results);
+    // console.log("----------");
+
     const funcCalled = getFunctionCalled(results);
-    
-    this.data?.set(id, url);
+
+    this.data?.set(id, dataObj);
+    if (dataObj.length > 1) {
+      return;
+    }
+
     for (var func of funcCalled) {
       await this.generateTree(func, id, false, depth + 1);
     }
