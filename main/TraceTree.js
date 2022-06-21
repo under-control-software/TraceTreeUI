@@ -54,7 +54,7 @@ class TraceTree {
         lineNumber: funcObj.lineNumber,
       };
     }
-    console.log(oldRegobj);
+
     if (!this.registry?.get(JSON.stringify(oldRegobj))) {
       console.log("error");
       return { err: "Not Found" };
