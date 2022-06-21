@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   font-family: "Montserrat", sans-serif;
-  background-color: #5399fa26;
+  color: rgb(41, 41, 50);
 }
 
 /* .App-header {
@@ -276,4 +276,30 @@ code-preview {
   border-radius: 4px;
   right: 0px;
   z-index: 1000;
+}
+.index-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+}
+.index-item-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 1000px;
+  border: 1px solid black;
+}
+
+.index-box {
+  margin: 5px 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 3px;
+}
+
+.index-item-text {
+  color: rgb(100, 100, 100);
 }

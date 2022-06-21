@@ -313,6 +313,32 @@ class App extends Component {
         {!this.state.nodes ? null : (
           <div style={{ height: "80vh", display: "flex", width: "100%" }}>
             <div className="left-box">
+              <div className="index-box">
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "red" }}
+                  ></div>
+                  <div className="index-item-text">Root-Node</div>
+                </div>
+
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "yellow" }}
+                  ></div>
+                  <div className="index-item-text">Expandable Nodes</div>
+                </div>
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "black" }}
+                  ></div>
+                  <div className="index-item-text">
+                    Intermediate or Terminal Nodes
+                  </div>
+                </div>
+              </div>
               <Graph
                 data={this.state.nodes}
                 NodeComponent={this.Node}
