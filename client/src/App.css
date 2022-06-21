@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .App-header {
@@ -14,34 +15,58 @@
   font-size: bold;
 }
 
-#hover-box {
-  border-radius: 2px;
-
-  padding: 10px;
-  height: 100%;
-  background-color: #eee;
-}
-
 .left-box {
   flex: 1.1;
-  border-radius: 3px;
   margin: 10px;
+  border: 1px solid grey;
   background-color: #eee;
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
 }
 
 .right-box {
   flex: 0.9;
-  height: 78vh;
   overflow: auto;
   margin: 10px;
-  border-radius: 3px;
   background-color: white;
   border: 1px solid grey;
-  /* box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4); */
+  padding: 10px;
 }
 
 .radio-buttons {
   text-align: left;
   font-size: 1.1em;
+}
+
+input {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.1em;
+  border-radius: 0px;
+  border: 1px solid black;
+  padding: 3px;
+}
+
+.run-button {
+  font-size: 1.1em;
+  border: 1px solid #2246ce;
+  background-color: #408efd;
+  padding: 4px;
+  cursor: pointer;
+  color: white;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+button:hover {
+  background-color: grey;
+  border: 1px solid black;
+}
+
+.select-button {
+  font-size: 1.1em;
+  border: 1px solid #de6b1f;
+  background-color: #ff9b4a;
+  padding: 4px;
+  cursor: pointer;
+  color: white;
+  padding-left: 15px;
+  padding-right: 15px;
 }

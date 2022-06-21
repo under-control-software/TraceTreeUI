@@ -25,6 +25,8 @@ class App extends Component {
       hover: false,
       curNode: null,
       option: null,
+      selectValid: true,
+      radioValue: "",
     };
 
     this.run = this.run.bind(this);
@@ -36,6 +38,8 @@ class App extends Component {
   display = (node) => {
     this.setState({
       curNode: node,
+      selectValid: node.data.length <= 1 ? false : true,
+      radioValue: node.data.length == 1 ? node.data[0] : "",
     });
   };
 
@@ -60,6 +64,7 @@ class App extends Component {
 
     return (
       <a
+        style={{ cursor: "pointer" }}
         id="node"
         onClick={() => {
           if (node.data) {
@@ -196,30 +201,27 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <div className="App-title">TraceTree</div>
+          <div className="App-title">
+            <b>TraceTree</b>
+          </div>
         </div>
         <br></br>
-        <label>Function name: </label>
-        <input
-          type="text"
-          size={31}
-          id="func-name"
-          style={{ fontSize: "1.1em" }}
-        />
+        <label>
+          Function name: <span style={{ color: "white" }}>..</span>
+        </label>
+        <input type="text" size={31} id="func-name" />
         <br></br>
         <br></br>
-        <label>Number of arguments: </label>
-        <input
-          type="text"
-          size={4}
-          id="num-args"
-          style={{ fontSize: "1.1em" }}
-        />
+        <label>
+          Number of arguments: <span style={{ color: "white" }}>..</span>
+        </label>
+        <input type="text" size={8} id="num-args" />
         <br></br>
         <br></br>
-        <button style={{ fontSize: "1.1em" }} onClick={this.run}>
+        <button className="run-button" onClick={this.run}>
           Run
         </button>
+        <br></br>
         <br></br>
         <div style={{ textAlign: "center", fontSize: "1.2em" }}>
           {this.state.message}
@@ -240,40 +242,62 @@ class App extends Component {
               />
             </div>
             <div className="right-box">
-              <div id="hover-box">
-                <div style={{ fontSize: "1.2em" }}>
-                  Select the correct reference
-                </div>
-                <div className="radio-buttons">
-                  <br></br>
-                  <Radio.Group onChange={this.onChange}>
-                    {this.state.curNode
-                      ? this.state.curNode.data.map((e) => {
-                          return (
-                            <div>
-                              <Radio value={e}>File: {e.file}</Radio>
-                              <div style={{ fontSize: "0.88em" }}>
-                                <a href={e.url}>Line:</a> {e.preview}
-                              </div>
-                              <br></br>
+              <div style={{ fontSize: "1.2em" }}>
+                <b>Please select the correct reference</b>
+              </div>
+              <div className="radio-buttons">
+                <br></br>
+                <Radio.Group
+                  onChange={this.onChange}
+                  value={this.state.radioValue}
+                >
+                  {this.state.curNode
+                    ? this.state.curNode.data.map((e, ind) => {
+                        return (
+                          <div
+                            style={{
+                              backgroundColor: ind % 2 ? "#cecece" : "white",
+                            }}
+                          >
+                            <Radio
+                              value={e}
+                              style={{ cursor: "pointer" }}
+                              onClick={() => {
+                                this.setState({
+                                  radioValue: e,
+                                });
+                              }}
+                            >
+                              {" "}
+                              File: {e.file}
+                            </Radio>
+                            <div
+                              style={{
+                                fontSize: "0.88em",
+                                marginTop: "3px",
+                                marginLeft: "28px",
+                                paddingBottom: "8px",
+                              }}
+                            >
+                              <a href={e.url}>Line</a>: {e.preview}...
                             </div>
-                          );
-                        })
-                      : null}
-                  </Radio.Group>
-                  <br></br>
-                  {this.state.curNode ? (
-                    <div style={{ textAlign: "center" }}>
-                      <button
-                        onClick={this.selectOption}
-                        style={{ fontSize: "1.2em" }}
-                      >
-                        Select
-                      </button>
-                      <br></br>
-                    </div>
-                  ) : null}
-                </div>
+                          </div>
+                        );
+                      })
+                    : null}
+                </Radio.Group>
+                <br></br>
+                {this.state.curNode && this.state.selectValid ? (
+                  <div style={{ textAlign: "center" }}>
+                    <button
+                      className="select-button"
+                      onClick={this.selectOption}
+                    >
+                      Select
+                    </button>
+                    <br></br>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
