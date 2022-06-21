@@ -22,6 +22,7 @@ const Line = ({ link, ...restProps }) => {
 class App extends Component {
   constructor() {
     super();
+    this.myRef = React.createRef();
     this.state = {
       message: "",
       adjList: new Map(),
@@ -116,7 +117,8 @@ class App extends Component {
       </a>
     );
   };
-
+  scrollToMyRef = () =>
+    window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" });
   run() {
     var funcName = document.getElementById("func-name").value;
     // funcName = "getAccessControlAllowCredentials";
@@ -172,6 +174,7 @@ class App extends Component {
         this.setState({
           nodes: nodes,
         });
+        this.scrollToMyRef();
       });
   }
 
@@ -256,6 +259,7 @@ class App extends Component {
         this.setState({
           nodes: nodes,
         });
+        window.scrollTo(1000, 0);
       });
   };
 
@@ -310,6 +314,32 @@ class App extends Component {
         {!this.state.nodes ? null : (
           <div style={{ height: "80vh", display: "flex", width: "100%" }}>
             <div className="left-box">
+              <div className="index-box">
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "red" }}
+                  ></div>
+                  <div className="index-item-text">Root-Node</div>
+                </div>
+
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "yellow" }}
+                  ></div>
+                  <div className="index-item-text">Expandable Nodes</div>
+                </div>
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "black" }}
+                  ></div>
+                  <div className="index-item-text">
+                    Intermediate or Terminal Nodes
+                  </div>
+                </div>
+              </div>
               <Graph
                 data={this.state.nodes}
                 NodeComponent={this.Node}
@@ -427,6 +457,7 @@ class App extends Component {
           </div>
         )}
         <br></br>
+        <div ref={this.myRef}></div>
       </div>
     );
   }
