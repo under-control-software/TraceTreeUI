@@ -27,6 +27,7 @@ class App extends Component {
       selectValid: true,
       radioValue: "",
       processed: [],
+      displayBox: true,
     };
 
     this.run = this.run.bind(this);
@@ -70,6 +71,18 @@ class App extends Component {
         style={{ cursor: "pointer" }}
         id="node"
         onClick={() => {
+          if (node.data.length === 1) {
+            this.setState({
+              option: node.data[0],
+            });
+          } else {
+            this.setState({
+              option: null,
+            });
+          }
+          this.setState({
+            displayBox: true,
+          });
           if (node.data) {
             hoverBox();
           } else {
@@ -89,8 +102,8 @@ class App extends Component {
 
   run() {
     var funcName = document.getElementById("func-name").value;
-    funcName = "getAccessControlAllowCredentials";
-    // funcName = "purgeUnreferencedEntries";
+    // funcName = "getAccessControlAllowCredentials";
+    funcName = "purgeUnreferencedEntries";
     var numArgs = document.getElementById("num-args").value;
     numArgs = 0;
     if (funcName === "" || !funcName) {
@@ -99,7 +112,9 @@ class App extends Component {
     }
     this.setState({
       message: "Please wait...",
+      displayBox: false,
     });
+
     fetch("/api/generategraph", {
       method: "POST",
       headers: {
@@ -144,6 +159,7 @@ class App extends Component {
   }
 
   onChange = (e) => {
+    console.log(e.target.value);
     this.setState({
       option: e.target.value,
     });
@@ -154,13 +170,24 @@ class App extends Component {
       alert("Please select an option");
       return;
     }
+    console.log("global option", this.state.curNode);
     let parentid;
-    this.state.adjList.forEach((value, key) => {
-      if (value.includes(this.state.curNode.id)) {
-        parentid = key;
-      }
+    if (this.state.curNode.data.length === 1) {
+      parentid = "";
+    } else {
+      this.state.adjList.forEach((value, key) => {
+        if (value.includes(this.state.curNode.id)) {
+          parentid = key;
+        }
+      });
+    }
+    console.log(this.state.curNode.id);
+    console.log(parentid);
+    console.log(this.state.registry);
+    this.setState({
+      displayBox: false,
+      message: "Please wait...",
     });
-
     // console.log(this.state.option);
     // TODO: write the remaining logic here after the user selects a match
     fetch("/api/expandgraph", {
@@ -274,76 +301,78 @@ class App extends Component {
               />
             </div>
             <div className="right-box">
-              <div style={{ fontSize: "1.2em" }}>
-                <b>Please select the correct reference</b>
-              </div>
-              <div className="radio-buttons">
-                <br></br>
-                <Radio.Group
-                  onChange={this.onChange}
-                  value={this.state.radioValue}
-                >
-                  {this.state.curNode
-                    ? this.state.curNode.data.map((e, ind) => {
-                        return (
-                          <div
-                            style={{
-                              backgroundColor: ind % 2 ? "#408ffd3a" : "white",
-                              padding: "0.2rem",
-                              border:
-                                this.state.radioValue === e
-                                  ? "2px solid #408efd"
-                                  : "",
-                              borderRadius: "5px",
-                            }}
-                          >
-                            <Radio
-                              value={e}
-                              style={{ cursor: "pointer" }}
-                              onClick={() => {
-                                this.setState({
-                                  radioValue: e,
-                                });
-                              }}
-                            >
-                              {" "}
-                              File: {e.file}
+              {this.state.displayBox ? (
+                <div>
+                  <div style={{ fontSize: "1.2em" }}>
+                    <b>Please select the correct reference</b>
+                  </div>
+                  <div className="radio-buttons">
+                    <br></br>
+                    <Radio.Group onChange={this.onChange}>
+                      {this.state.curNode
+                        ? this.state.curNode.data.map((e, ind) => {
+                            return (
                               <div
                                 style={{
-                                  fontSize: "0.88em",
-                                  marginTop: "3px",
-                                  marginLeft: "28px",
-                                  paddingBottom: "8px",
+                                  backgroundColor:
+                                    ind % 2 ? "#408ffd3a" : "white",
+                                  padding: "0.2rem",
+                                  border:
+                                    this.state.radioValue === e
+                                      ? "2px solid #408efd"
+                                      : "",
+                                  borderRadius: "5px",
                                 }}
                               >
-                                <a
-                                  className="code-prev"
-                                  href={e.url}
-                                  target="_blank"
+                                <Radio
+                                  value={e}
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => {
+                                    this.setState({
+                                      radioValue: e,
+                                    });
+                                  }}
                                 >
-                                  Line
-                                </a>
-                                : {e.preview}...
+                                  {" "}
+                                  File: {e.file}
+                                  <div
+                                    style={{
+                                      fontSize: "0.88em",
+                                      marginTop: "3px",
+                                      marginLeft: "28px",
+                                      paddingBottom: "8px",
+                                    }}
+                                  >
+                                    <a
+                                      className="code-prev"
+                                      href={e.url}
+                                      target="_blank"
+                                    >
+                                      Line
+                                    </a>
+                                    : {e.preview}...
+                                  </div>
+                                </Radio>
                               </div>
-                            </Radio>
-                          </div>
-                        );
-                      })
-                    : null}
-                </Radio.Group>
-                <br></br>
-                {this.state.curNode && this.state.selectValid ? (
-                  <div style={{ textAlign: "center" }}>
-                    <button
-                      className="select-button"
-                      onClick={this.selectOption}
-                    >
-                      Select
-                    </button>
+                            );
+                          })
+                        : null}
+                    </Radio.Group>
                     <br></br>
+                    {this.state.curNode && this.state.selectValid ? (
+                      <div style={{ textAlign: "center" }}>
+                        <button
+                          className="select-button"
+                          onClick={this.selectOption}
+                        >
+                          Select
+                        </button>
+                        <br></br>
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
-              </div>
+                </div>
+              ) : null}
             </div>
           </div>
         )}

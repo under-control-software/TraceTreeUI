@@ -54,25 +54,25 @@ class TraceTree {
         lineNumber: funcObj.lineNumber,
       };
     }
-
-    if (!this.registry?.get(oldRegobj)) {
+    console.log(oldRegobj);
+    if (!this.registry?.get(JSON.stringify(oldRegobj))) {
       console.log("error");
       return { err: "Not Found" };
     }
 
     if (
-      this.registry?.get(regobj) &&
-      this.processed.includes[this.registry?.get(regobj)]
+      this.registry?.get(JSON.stringify(regobj)) &&
+      this.processed.includes[this.registry?.get(JSON.stringify(regobj))]
     ) {
       if (parent !== "") {
-        const newid = this.registry?.get(regobj);
-        const oldid = this.registry?.get(oldRegobj);
+        const newid = this.registry?.get(JSON.stringify(regobj));
+        const oldid = this.registry?.get(JSON.stringify(oldRegobj));
         this.adjList.get(parent).forEach((value, ind) => {
           if (value === oldid) {
             this.adjList.get(parent)[ind] = newid;
           }
         });
-        this.registry?.delete(oldRegobj);
+        this.registry?.delete(JSON.stringify(oldRegobj));
         this.reverseReg?.delete(oldid);
         this.adjList?.delete(oldid);
         this.data?.delete(oldid);
@@ -86,9 +86,9 @@ class TraceTree {
       };
     }
 
-    let id = this.registry.get(oldRegobj);
-    this.registry?.delete(oldRegobj);
-    this.registry?.set(regobj, id);
+    let id = this.registry.get(JSON.stringify(oldRegobj));
+    this.registry?.delete(JSON.stringify(oldRegobj));
+    this.registry?.set(JSON.stringify(regobj), id);
     this.reverseReg?.set(id, regobj);
     this.data?.set(id, [funcObj]);
 
@@ -135,7 +135,7 @@ class TraceTree {
         fileUrl: "",
         lineNumber: -1,
       };
-      this.registry?.set(regobj, id);
+      this.registry?.set(JSON.stringify(regobj), id);
       this.reverseReg?.set(id, regobj);
       this.adjList?.set(id, []);
       this.data?.set(id, []);
@@ -168,7 +168,7 @@ class TraceTree {
         fileUrl: "",
         lineNumber: -1,
       };
-      this.registry?.set(regobj, id);
+      this.registry?.set(JSON.stringify(regobj), id);
       this.reverseReg?.set(id, regobj);
       this.adjList?.set(id, []);
       this.data?.set(id, dataObj);
@@ -184,15 +184,15 @@ class TraceTree {
       lineNumber: dataObj[0].lineNumber,
     };
     // check if already visited
-    if (this.registry?.get(regobj)) {
-      let oldId = this.registry.get(regobj);
+    if (this.registry?.get(JSON.stringify(regobj))) {
+      let oldId = this.registry.get(JSON.stringify(regobj));
       if (parent && !this.adjList?.get(parent).includes(oldId)) {
         this.adjList?.get(parent).push(oldId);
       }
       return;
     }
 
-    this.registry?.set(regobj, id);
+    this.registry?.set(JSON.stringify(regobj), id);
     this.reverseReg?.set(id, regobj);
     this.adjList?.set(id, []);
     this.data?.set(id, dataObj);
