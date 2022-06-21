@@ -2,8 +2,6 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
-const { queries } = require("./utils/queries");
-const { fetchQuery } = require("./utils/fetchQuery");
 
 const Line = ({ link, ...restProps }) => {
   return <line {...restProps} stroke="grey" />;
@@ -87,7 +85,7 @@ class App extends Component {
   run() {
     var funcName = document.getElementById("func-name").value;
     // funcName = "getAccessControlAllowCredentials";
-    funcName = "purgeUnreferencedEntries"
+    funcName = "purgeUnreferencedEntries";
     var numArgs = document.getElementById("num-args").value;
     numArgs = 0;
     if (funcName === "" || !funcName) {
@@ -156,7 +154,7 @@ class App extends Component {
       if (value.includes(this.state.curNode.id)) {
         parentid = key;
       }
-    })
+    });
 
     // console.log(this.state.option);
     // TODO: write the remaining logic here after the user selects a match
@@ -174,7 +172,7 @@ class App extends Component {
         reverseReg: JSON.stringify(Array.from(this.state.reverseReg.entries())),
         processed: JSON.stringify(this.state.processed),
         paramCount: this.state.reverseReg.get(this.state.curNode.id).paramCount,
-        parent: parentid
+        parent: parentid,
       }),
     })
       .then((res) => {
@@ -189,7 +187,7 @@ class App extends Component {
           registry: new Map(JSON.parse(data.registry)),
           data: new Map(JSON.parse(data.data)),
           reverseReg: new Map(JSON.parse(data.reverseReg)),
-          processed: JSON.parse(data.processed)
+          processed: JSON.parse(data.processed),
         });
         const nodes = {
           nodes: [],
