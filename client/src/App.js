@@ -349,12 +349,12 @@ class App extends Component {
                                 style={{
                                   border:
                                     this.state.radioValue === e
-                                      ? "2px solid #408efd"
+                                      ? "2px solid white"
                                       : "",
                                   // add a glowing shadow
                                   boxShadow:
                                     this.state.radioValue === e
-                                      ? "0px 0px 10px #408efd"
+                                      ? "0px 0px 10px white"
                                       : "",
                                 }}
                                 className={`card card-${

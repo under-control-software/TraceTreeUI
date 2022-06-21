@@ -22,6 +22,9 @@
   border: 1px solid grey;
   background-color: #eee;
   border-radius: 5px;
+  /* make scrollable in both directions*/
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .right-box {
