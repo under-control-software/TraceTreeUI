@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "antd": "^4.21.3",
+    "phosphor-react": "^1.4.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-graph-network": "^1.0.6",
