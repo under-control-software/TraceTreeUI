@@ -37,6 +37,7 @@ const main = async (funcName, paramCount) => {
 };
 
 const expand = async (obj, paramCount) => {
+  console.log('expand server', obj);
   let ds = new TraceTree(obj);
   return await ds.expand(
     JSON.parse(obj.option).funcName,
