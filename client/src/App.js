@@ -86,7 +86,8 @@ class App extends Component {
 
   run() {
     var funcName = document.getElementById("func-name").value;
-    funcName = "getAccessControlAllowCredentials";
+    // funcName = "getAccessControlAllowCredentials";
+    funcName = "purgeUnreferencedEntries"
     var numArgs = document.getElementById("num-args").value;
     if (funcName === "" || !funcName) {
       alert("Please enter a function name");

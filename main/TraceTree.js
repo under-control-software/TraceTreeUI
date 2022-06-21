@@ -10,12 +10,15 @@ class TraceTree {
       this.data = new Map();
       this.registry = new Map();
       this.reverseReg = new Map();
+      // this.processed = [];
       this.start = null;
     } else {
-      this.adjList = new Map(JSON.parse(obj.adjList));
-      this.registry = new Map(JSON.parse(obj.registry));
-      this.data = new Map(JSON.parse(obj.data));
-      this.reverseReg = new Map(JSON.parse(obj.reverseReg));
+      this.adjList = new Map(JSON.parse(obj['adjList']));
+      this.registry = new Map(JSON.parse(obj['registry']));
+      this.data = new Map(JSON.parse(obj['data']));
+      this.reverseReg = new Map(JSON.parse(obj['reverseReg']));
+      // this.processed = JSON.parse(obj['processed']);
+      // this.start = obj['start'];
     }
   }
 
@@ -31,22 +34,19 @@ class TraceTree {
   }
 
   async expand(funcName, paramCount, funcObj) {
-    const id = nanoid();
-    this.start = id; // TODO: do we need start in expand graph?
-    // parent && this.adjList?.get(parent).push(id);
-    this.registry?.set(funcName, id);
-    this.reverseReg?.set(id, funcName);
-    this.adjList?.set(id, []);
+    let id = this.registry.get(funcName)
+    this.data?.set(id, [funcObj]);
     const funcCalled = getFunctionCalled(funcObj);
+    console.log(funcCalled);
     for (var func of funcCalled) {
-      await this.generateTree(func.funcName, func.paramCount, id, false, 0);
+      await this.generateTree(func.funcName, func.paramCount, id, false, 1);
     }
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
       registry: JSON.stringify(Array.from(this.registry.entries())),
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-      start: this.start, // we can get rid of start
+      start: this.start, // we can get rid of start    -- ? then how to figure out start nano id in front end
     };
   }
 
@@ -60,6 +60,7 @@ class TraceTree {
     if (depth > 2) {
       return;
     }
+    // TODO: need to be check after api call
     if (this.registry?.get(funcName)) {
       let oldId = this.registry.get(funcName);
       if (parent && !this.adjList?.get(parent).includes(oldId)) {
@@ -67,6 +68,8 @@ class TraceTree {
       }
       return;
     }
+
+    // let results = await getBody(funcName, paramCount);
 
     const id = nanoid();
     if (start) {
