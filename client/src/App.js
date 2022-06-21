@@ -61,6 +61,9 @@ class App extends Component {
     const fontSize = 14;
     const radius = 10;
     let color = node.start ? "red" : "black";
+    if (!this.state.processed.includes(node.id)) {
+      color = "yellow";
+    }
     if (!node.data || node.data.length === 0) {
       color = "blue";
     }
