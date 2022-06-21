@@ -38,6 +38,11 @@
   border: 1px solid grey;
   padding: 10px;
   border-radius: 5px;
+  position: relative;
+}
+
+.right-box-closed {
+  display: none;
 }
 
 .radio-buttons {
@@ -237,4 +242,20 @@ code-preview {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+
+.expander {
+  position: fixed;
+  justify-self: center;
+  background-color: rgb(41, 41, 50);
+  height: 50px;
+  width: 15px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  right: 0px;
+  z-index: 1000;
 }

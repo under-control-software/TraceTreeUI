@@ -7,6 +7,8 @@ import {
   TreeStructure,
   File,
   ArrowRight,
+  CaretRight,
+  CaretLeft,
 } from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
@@ -33,6 +35,7 @@ class App extends Component {
       radioValue: "",
       processed: [],
       displayBox: true,
+      viewRight: false,
     };
 
     this.run = this.run.bind(this);
@@ -93,6 +96,9 @@ class App extends Component {
           } else {
             this.display(null);
           }
+          this.setState({
+            viewRight: true,
+          });
         }}
       >
         <circle fill={`${color}`} stroke="black" r={sizes.radius} />
@@ -305,7 +311,26 @@ class App extends Component {
                 pullIn={false}
               />
             </div>
-            <div className="right-box">
+            <div
+              className="expander"
+              onClick={() => {
+                this.setState({
+                  viewRight: !this.state.viewRight,
+                });
+              }}
+            >
+              {this.state.viewRight ? (
+                <CaretRight size={15} weight="bold" />
+              ) : (
+                <CaretLeft size={15} weight="bold" />
+              )}
+            </div>
+
+            <div
+              className={`right-box ${
+                !this.state.viewRight && "right-box-closed"
+              }`}
+            >
               <div style={{ fontSize: "1.2em", color: "white" }}>
                 <b>Please select the correct reference</b>
               </div>
@@ -352,7 +377,8 @@ class App extends Component {
                                       className="card__icon"
                                       weight="bold"
                                     />{" "}
-                                    {e.file}
+                                    {/* trim the file to max of length 30 */}
+                                    {e.file.substring(0, 30)}
                                   </div>
                                   <div className="file-link-cont">
                                     <span className="preview">
