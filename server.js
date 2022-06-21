@@ -37,7 +37,7 @@ const main = async (funcName, paramCount) => {
 };
 
 const expand = async (obj, paramCount) => {
-  console.log('expand server', obj);
+  console.log("expand server", obj);
   let ds = new TraceTree(obj);
   return await ds.expand(
     JSON.parse(obj.option).funcName,
@@ -46,6 +46,6 @@ const expand = async (obj, paramCount) => {
   );
 };
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5003;
 
 app.listen(port, () => `Server running on port ${port}`);

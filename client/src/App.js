@@ -2,6 +2,7 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
+import { MagnifyingGlass } from "phosphor-react";
 const { queries } = require("./utils/queries");
 const { fetchQuery } = require("./utils/fetchQuery");
 
@@ -87,7 +88,7 @@ class App extends Component {
   run() {
     var funcName = document.getElementById("func-name").value;
     // funcName = "getAccessControlAllowCredentials";
-    funcName = "purgeUnreferencedEntries"
+    funcName = "purgeUnreferencedEntries";
     var numArgs = document.getElementById("num-args").value;
     if (funcName === "" || !funcName) {
       alert("Please enter a function name");
@@ -201,27 +202,41 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <div className="App-title">
-            <b>TraceTree</b>
+        <div className="header-search">
+          <div className="App-header">
+            <div className="App-title">
+              <b>TraceTree</b>
+            </div>
+          </div>
+
+          <div className="search-cont">
+            {/* <label>
+                Function name: <span style={{ color: "white" }}>..</span>
+              </label> */}
+
+            <input
+              type="text"
+              size={31}
+              id="func-name"
+              className="name-search-bar"
+              placeholder="Search Function by Name"
+            />
+
+            {/* <label>
+              Number of arguments: <span style={{ color: "white" }}>..</span>
+            </label> */}
+            <input
+              type="number"
+              size={8}
+              id="num-args"
+              className="search-bar num-bar"
+              placeholder="Number of Arguments"
+            />
+            <button className="run-button" onClick={this.run}>
+              Run
+            </button>
           </div>
         </div>
-        <br></br>
-        <label>
-          Function name: <span style={{ color: "white" }}>..</span>
-        </label>
-        <input type="text" size={31} id="func-name" />
-        <br></br>
-        <br></br>
-        <label>
-          Number of arguments: <span style={{ color: "white" }}>..</span>
-        </label>
-        <input type="text" size={8} id="num-args" />
-        <br></br>
-        <br></br>
-        <button className="run-button" onClick={this.run}>
-          Run
-        </button>
         <br></br>
         <br></br>
         <div style={{ textAlign: "center", fontSize: "1.2em" }}>
@@ -257,7 +272,13 @@ class App extends Component {
                         return (
                           <div
                             style={{
-                              backgroundColor: ind % 2 ? "#cecece" : "white",
+                              backgroundColor: ind % 2 ? "#408ffd3a" : "white",
+                              padding: "0.2rem",
+                              border:
+                                this.state.radioValue === e
+                                  ? "2px solid #408efd"
+                                  : "",
+                              borderRadius: "5px",
                             }}
                           >
                             <Radio
@@ -271,17 +292,24 @@ class App extends Component {
                             >
                               {" "}
                               File: {e.file}
+                              <div
+                                style={{
+                                  fontSize: "0.88em",
+                                  marginTop: "3px",
+                                  marginLeft: "28px",
+                                  paddingBottom: "8px",
+                                }}
+                              >
+                                <a
+                                  className="code-prev"
+                                  href={e.url}
+                                  target="_blank"
+                                >
+                                  Line
+                                </a>
+                                : {e.preview}...
+                              </div>
                             </Radio>
-                            <div
-                              style={{
-                                fontSize: "0.88em",
-                                marginTop: "3px",
-                                marginLeft: "28px",
-                                paddingBottom: "8px",
-                              }}
-                            >
-                              <a href={e.url}>Line</a>: {e.preview}...
-                            </div>
                           </div>
                         );
                       })
