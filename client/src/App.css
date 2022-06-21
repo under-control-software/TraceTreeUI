@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   font-family: "Montserrat", sans-serif;
+  background-color: #5399fa26;
 }
 
 /* .App-header {
@@ -12,15 +13,25 @@
 .App-title {
   padding: 10px;
   font-size: 2.1em;
-  font-size: bold;
+  font-weight: 300;
   color: white;
+  /* increase letter gap */
+  line-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* all lowercase */
+  text-transform: uppercase;
 }
 
+.header-icon {
+  color: rgb(38, 251, 38);
+}
 .left-box {
   flex: 2;
   margin: 10px;
   border: 1px solid grey;
-  background-color: #eee;
+  background-color: #5399fa5a;
   border-radius: 5px;
   /* make scrollable in both directions*/
   overflow-y: scroll;

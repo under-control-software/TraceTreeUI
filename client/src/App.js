@@ -9,6 +9,8 @@ import {
   ArrowRight,
   CaretRight,
   CaretLeft,
+  Tree,
+  TreeEvergreen,
 } from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
@@ -259,7 +261,11 @@ class App extends Component {
         <div className="header-search">
           <div className="App-header">
             <div className="App-title">
-              <b>TraceTree</b>
+              Trace
+              <span className="header-icon">
+                <TreeEvergreen size={50} weight="duotone" />
+              </span>
+              ree
             </div>
           </div>
 
