@@ -89,6 +89,7 @@ class App extends Component {
     // funcName = "getAccessControlAllowCredentials";
     funcName = "purgeUnreferencedEntries"
     var numArgs = document.getElementById("num-args").value;
+    numArgs = 0;
     if (funcName === "" || !funcName) {
       alert("Please enter a function name");
       return;
@@ -102,7 +103,7 @@ class App extends Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: funcName }),
+      body: JSON.stringify({ name: funcName, paramCount: numArgs }),
     })
       .then((res) => {
         return res.json();
@@ -115,6 +116,7 @@ class App extends Component {
           registry: new Map(JSON.parse(data.registry)),
           data: new Map(JSON.parse(data.data)),
           reverseReg: new Map(JSON.parse(data.reverseReg)),
+          processed: JSON.parse(data.processed),
           start: data.start,
         });
         const nodes = {
@@ -149,6 +151,13 @@ class App extends Component {
       alert("Please select an option");
       return;
     }
+    let parentid;
+    this.state.adjList.forEach((value, key) => {
+      if (value.includes(this.state.curNode.id)) {
+        parentid = key;
+      }
+    })
+
     // console.log(this.state.option);
     // TODO: write the remaining logic here after the user selects a match
     fetch("/api/expandgraph", {
@@ -163,12 +172,16 @@ class App extends Component {
         data: JSON.stringify(Array.from(this.state.data.entries())),
         registry: JSON.stringify(Array.from(this.state.registry.entries())),
         reverseReg: JSON.stringify(Array.from(this.state.reverseReg.entries())),
+        processed: JSON.stringify(this.state.processed),
+        paramCount: this.state.reverseReg.get(this.state.curNode.id).paramCount,
+        parent: parentid
       }),
     })
       .then((res) => {
         return res.json();
       })
       .then((data) => {
+        console.log(data.adjList);
         this.setState({
           message:
             "Graph Generated. Click on the nodes to uncover more details.",
@@ -176,6 +189,7 @@ class App extends Component {
           registry: new Map(JSON.parse(data.registry)),
           data: new Map(JSON.parse(data.data)),
           reverseReg: new Map(JSON.parse(data.reverseReg)),
+          processed: JSON.parse(data.processed)
         });
         const nodes = {
           nodes: [],

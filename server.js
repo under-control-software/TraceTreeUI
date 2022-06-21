@@ -14,13 +14,13 @@ app.use(jsonParser);
 
 // @ts-ignore
 app.post("/api/generategraph", cors(), async (req, res) => {
-  const result = await main(req.body.name, 0);
+  const result = await main(req.body.name, req.body.paramCount);
   res.json(result);
 });
 
 // @ts-ignore
 app.post("/api/expandgraph", cors(), async (req, res) => {
-  const result = await expand(req.body, 0);
+  const result = await expand(req.body);
   res.json(result);
 });
 
@@ -36,13 +36,13 @@ const main = async (funcName, paramCount) => {
   return await ds.run(funcName, paramCount);
 };
 
-const expand = async (obj, paramCount) => {
-  console.log('expand server', obj);
+const expand = async (obj) => {
   let ds = new TraceTree(obj);
   return await ds.expand(
     JSON.parse(obj.option).funcName,
-    paramCount,
-    JSON.parse(obj.option)
+    obj.paramCount,
+    JSON.parse(obj.option),
+    obj.parent
   );
 };
 

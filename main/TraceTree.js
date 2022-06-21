@@ -10,15 +10,14 @@ class TraceTree {
       this.data = new Map();
       this.registry = new Map();
       this.reverseReg = new Map();
-      // this.processed = [];
+      this.processed = [];
       this.start = null;
     } else {
       this.adjList = new Map(JSON.parse(obj['adjList']));
       this.registry = new Map(JSON.parse(obj['registry']));
       this.data = new Map(JSON.parse(obj['data']));
       this.reverseReg = new Map(JSON.parse(obj['reverseReg']));
-      // this.processed = JSON.parse(obj['processed']);
-      // this.start = obj['start'];
+      this.processed = JSON.parse(obj['processed']);
     }
   }
 
@@ -29,24 +28,66 @@ class TraceTree {
       data: JSON.stringify(Array.from(this.data.entries())),
       registry: JSON.stringify(Array.from(this.registry.entries())),
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
+      processed: JSON.stringify(this.processed),
       start: this.start,
     };
   }
 
-  async expand(funcName, paramCount, funcObj) {
-    let id = this.registry.get(funcName)
+  async expand(funcName, paramCount, funcObj, parent) {  // parent -> '' means single match
+    const regobj = {funcName, paramCount, parent: '', fileUrl: funcObj.fileUrl, lineNumber: funcObj.lineNumber};
+    let oldRegobj;
+    if (parent !== '') {
+      oldRegobj = {funcName, paramCount, parent, fileUrl: '', lineNumber: -1};
+    } else {
+      oldRegobj = {funcName, paramCount, parent: '', fileUrl: funcObj.fileUrl, lineNumber: funcObj.lineNumber};
+    }
+
+    if (!this.registry?.get(oldRegobj)) {
+      console.log('error');
+      return {err: 'Not Found'};
+    }
+
+    if (this.registry?.get(regobj) && this.processed.includes[this.registry?.get(regobj)]) {
+      if (parent !== '') {
+        const newid = this.registry?.get(regobj);
+        const oldid = this.registry?.get(oldRegobj);
+        this.adjList.get(parent).forEach((value,ind) => {
+          if (value === oldid) {
+            this.adjList.get(parent)[ind] = newid;
+          }
+        });
+        this.registry?.delete(oldRegobj);
+        this.reverseReg?.delete(oldid);
+        this.adjList?.delete(oldid);
+        this.data?.delete(oldid);
+      }
+      return {
+        adjList: JSON.stringify(Array.from(this.adjList.entries())),
+        data: JSON.stringify(Array.from(this.data.entries())),
+        registry: JSON.stringify(Array.from(this.registry.entries())),
+        reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
+        processed: JSON.stringify(this.processed)
+      };
+    }
+
+    let id = this.registry.get(oldRegobj);
+    this.registry?.delete(oldRegobj);
+    this.registry?.set(regobj, id);
+    this.reverseReg?.set(id, regobj);
     this.data?.set(id, [funcObj]);
+
     const funcCalled = getFunctionCalled(funcObj);
-    console.log(funcCalled);
+    this.processed.push(id);
     for (var func of funcCalled) {
       await this.generateTree(func.funcName, func.paramCount, id, false, 1);
     }
+
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
       registry: JSON.stringify(Array.from(this.registry.entries())),
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-      start: this.start, // we can get rid of start    -- ? then how to figure out start nano id in front end
+      processed: JSON.stringify(this.processed)
     };
   }
 
@@ -60,29 +101,21 @@ class TraceTree {
     if (depth > 2) {
       return;
     }
-    // TODO: need to be check after api call
-    if (this.registry?.get(funcName)) {
-      let oldId = this.registry.get(funcName);
-      if (parent && !this.adjList?.get(parent).includes(oldId)) {
-        this.adjList?.get(parent).push(oldId);
-      }
-      return;
-    }
 
-    // let results = await getBody(funcName, paramCount);
+    let results = await getBody(funcName, paramCount);
 
     const id = nanoid();
     if (start) {
       this.start = id;
     }
     parent && this.adjList?.get(parent).push(id);
-    this.registry?.set(funcName, id);
-    this.reverseReg?.set(id, funcName);
-    this.adjList?.set(id, []);
 
-    let results = await getBody(funcName, paramCount);
-    // console.log(funcName, results);
-    if (!results || results.length === 0) {
+    if (!results || results.length === 0) {   // no match case
+      const regobj = {funcName, paramCount, parent, fileUrl:'', lineNumber:-1};
+      this.registry?.set(regobj, id);
+      this.reverseReg?.set(id, regobj);
+      this.adjList?.set(id, []);
+      this.data?.set(id, []);
       return;
     }
 
@@ -103,13 +136,36 @@ class TraceTree {
       });
     });
 
-    this.data?.set(id, dataObj);
-    if (dataObj.length > 1) {
+    if (dataObj.length > 1) {  // multiple matches
+      const regobj = {funcName, paramCount, parent, fileUrl:'', lineNumber:-1};
+      this.registry?.set(regobj, id);
+      this.reverseReg?.set(id, regobj);
+      this.adjList?.set(id, []);
+      this.data?.set(id, dataObj);
       return;
     }
 
-    const funcCalled = getFunctionCalled(dataObj[0]);
+    // single match
+    const regobj = {funcName, paramCount, parent:'', fileUrl:dataObj[0].fileUrl, lineNumber:dataObj[0].lineNumber};
+    // check if already visited
+    if (this.registry?.get(regobj)) {
+      let oldId = this.registry.get(regobj);
+      if (parent && !this.adjList?.get(parent).includes(oldId)) {
+        this.adjList?.get(parent).push(oldId);
+      }
+      return;
+    }
 
+    this.registry?.set(regobj, id);
+    this.reverseReg?.set(id, regobj);
+    this.adjList?.set(id, []);
+    this.data?.set(id, dataObj);
+
+    const funcCalled = getFunctionCalled(dataObj[0]);
+    if(depth >= 2) {
+      return ;
+    }
+    this.processed.push(id);
     for (var func of funcCalled) {
       await this.generateTree(
         func.funcName,
@@ -147,4 +203,19 @@ function b(){
 }
 
 adj[a]=b
+*/
+
+
+/*
+funcName
+-> Use api for funcname
+
+-> no match
+  funcName,paramCount, '', -1, parent-id
+
+->single match
+  funcname,paramCount,fileName,lineno., parent-id:''
+
+->multiple match
+  funcname,paramCount, '', -1, parent-id
 */

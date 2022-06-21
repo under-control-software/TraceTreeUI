@@ -73,13 +73,13 @@ function getFunctionCalled(funcBody) {
   }
   
   const value = funcBody.code;
-  console.log(value);
   value.shift();
   calledFunctions = value.map(line => {
     const codeLine = line.trim();
     return parseLine(codeLine);
   });
-  return [].concat(...calledFunctions);
+  const result = [].concat(...calledFunctions);
+  return [... new Set(result)];
 }
 
 function parseLine(codeLine) {
