@@ -2,6 +2,7 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
+import { MagnifyingGlass } from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
   return <line {...restProps} stroke="grey" />;
@@ -25,6 +26,7 @@ class App extends Component {
       option: null,
       selectValid: true,
       radioValue: "",
+      processed: [],
     };
 
     this.run = this.run.bind(this);
@@ -36,8 +38,11 @@ class App extends Component {
   display = (node) => {
     this.setState({
       curNode: node,
-      selectValid: node.data.length <= 1 ? false : true,
-      radioValue: node.data.length == 1 ? node.data[0] : "",
+      selectValid:
+        node.data.length === 0 || this.state.processed.includes(node.id)
+          ? false
+          : true,
+      radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
     });
   };
 
@@ -45,7 +50,7 @@ class App extends Component {
     const fontSize = 14;
     const radius = 10;
     let color = node.start ? "red" : "black";
-    if (!node.data) {
+    if (!node.data || node.data.length === 0) {
       color = "blue";
     }
 
@@ -75,7 +80,7 @@ class App extends Component {
         <circle fill={`${color}`} stroke="black" r={sizes.radius} />
         <g style={{ fontSize: sizes.textSize + "px" }}>
           <text x={sizes.radius + 7} y={sizes.radius / 2}>
-            {node.name + "()"}
+            {node.name.funcName + "()"}
           </text>
         </g>
       </a>
@@ -84,8 +89,8 @@ class App extends Component {
 
   run() {
     var funcName = document.getElementById("func-name").value;
-    // funcName = "getAccessControlAllowCredentials";
-    funcName = "purgeUnreferencedEntries";
+    funcName = "getAccessControlAllowCredentials";
+    // funcName = "purgeUnreferencedEntries";
     var numArgs = document.getElementById("num-args").value;
     numArgs = 0;
     if (funcName === "" || !funcName) {
@@ -213,27 +218,41 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <div className="App-title">
-            <b>TraceTree</b>
+        <div className="header-search">
+          <div className="App-header">
+            <div className="App-title">
+              <b>TraceTree</b>
+            </div>
+          </div>
+
+          <div className="search-cont">
+            {/* <label>
+                Function name: <span style={{ color: "white" }}>..</span>
+              </label> */}
+
+            <input
+              type="text"
+              size={31}
+              id="func-name"
+              className="name-search-bar"
+              placeholder="Search Function by Name"
+            />
+
+            {/* <label>
+              Number of arguments: <span style={{ color: "white" }}>..</span>
+            </label> */}
+            <input
+              type="number"
+              size={8}
+              id="num-args"
+              className="search-bar num-bar"
+              placeholder="Number of Arguments"
+            />
+            <button className="run-button" onClick={this.run}>
+              Run
+            </button>
           </div>
         </div>
-        <br></br>
-        <label>
-          Function name: <span style={{ color: "white" }}>..</span>
-        </label>
-        <input type="text" size={31} id="func-name" />
-        <br></br>
-        <br></br>
-        <label>
-          Number of arguments: <span style={{ color: "white" }}>..</span>
-        </label>
-        <input type="text" size={8} id="num-args" />
-        <br></br>
-        <br></br>
-        <button className="run-button" onClick={this.run}>
-          Run
-        </button>
         <br></br>
         <br></br>
         <div style={{ textAlign: "center", fontSize: "1.2em" }}>
@@ -269,7 +288,13 @@ class App extends Component {
                         return (
                           <div
                             style={{
-                              backgroundColor: ind % 2 ? "#cecece" : "white",
+                              backgroundColor: ind % 2 ? "#408ffd3a" : "white",
+                              padding: "0.2rem",
+                              border:
+                                this.state.radioValue === e
+                                  ? "2px solid #408efd"
+                                  : "",
+                              borderRadius: "5px",
                             }}
                           >
                             <Radio
@@ -283,17 +308,24 @@ class App extends Component {
                             >
                               {" "}
                               File: {e.file}
+                              <div
+                                style={{
+                                  fontSize: "0.88em",
+                                  marginTop: "3px",
+                                  marginLeft: "28px",
+                                  paddingBottom: "8px",
+                                }}
+                              >
+                                <a
+                                  className="code-prev"
+                                  href={e.url}
+                                  target="_blank"
+                                >
+                                  Line
+                                </a>
+                                : {e.preview}...
+                              </div>
                             </Radio>
-                            <div
-                              style={{
-                                fontSize: "0.88em",
-                                marginTop: "3px",
-                                marginLeft: "28px",
-                                paddingBottom: "8px",
-                              }}
-                            >
-                              <a href={e.url}>Line</a>: {e.preview}...
-                            </div>
                           </div>
                         );
                       })

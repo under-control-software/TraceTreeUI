@@ -13,11 +13,11 @@ class TraceTree {
       this.processed = [];
       this.start = null;
     } else {
-      this.adjList = new Map(JSON.parse(obj['adjList']));
-      this.registry = new Map(JSON.parse(obj['registry']));
-      this.data = new Map(JSON.parse(obj['data']));
-      this.reverseReg = new Map(JSON.parse(obj['reverseReg']));
-      this.processed = JSON.parse(obj['processed']);
+      this.adjList = new Map(JSON.parse(obj["adjList"]));
+      this.registry = new Map(JSON.parse(obj["registry"]));
+      this.data = new Map(JSON.parse(obj["data"]));
+      this.reverseReg = new Map(JSON.parse(obj["reverseReg"]));
+      this.processed = JSON.parse(obj["processed"]);
     }
   }
 
@@ -33,25 +33,41 @@ class TraceTree {
     };
   }
 
-  async expand(funcName, paramCount, funcObj, parent) {  // parent -> '' means single match
-    const regobj = {funcName, paramCount, parent: '', fileUrl: funcObj.fileUrl, lineNumber: funcObj.lineNumber};
+  async expand(funcName, paramCount, funcObj, parent) {
+    // parent -> '' means single match
+    const regobj = {
+      funcName,
+      paramCount,
+      parent: "",
+      fileUrl: funcObj.fileUrl,
+      lineNumber: funcObj.lineNumber,
+    };
     let oldRegobj;
-    if (parent !== '') {
-      oldRegobj = {funcName, paramCount, parent, fileUrl: '', lineNumber: -1};
+    if (parent !== "") {
+      oldRegobj = { funcName, paramCount, parent, fileUrl: "", lineNumber: -1 };
     } else {
-      oldRegobj = {funcName, paramCount, parent: '', fileUrl: funcObj.fileUrl, lineNumber: funcObj.lineNumber};
+      oldRegobj = {
+        funcName,
+        paramCount,
+        parent: "",
+        fileUrl: funcObj.fileUrl,
+        lineNumber: funcObj.lineNumber,
+      };
     }
 
     if (!this.registry?.get(oldRegobj)) {
-      console.log('error');
-      return {err: 'Not Found'};
+      console.log("error");
+      return { err: "Not Found" };
     }
 
-    if (this.registry?.get(regobj) && this.processed.includes[this.registry?.get(regobj)]) {
-      if (parent !== '') {
+    if (
+      this.registry?.get(regobj) &&
+      this.processed.includes[this.registry?.get(regobj)]
+    ) {
+      if (parent !== "") {
         const newid = this.registry?.get(regobj);
         const oldid = this.registry?.get(oldRegobj);
-        this.adjList.get(parent).forEach((value,ind) => {
+        this.adjList.get(parent).forEach((value, ind) => {
           if (value === oldid) {
             this.adjList.get(parent)[ind] = newid;
           }
@@ -66,7 +82,7 @@ class TraceTree {
         data: JSON.stringify(Array.from(this.data.entries())),
         registry: JSON.stringify(Array.from(this.registry.entries())),
         reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-        processed: JSON.stringify(this.processed)
+        processed: JSON.stringify(this.processed),
       };
     }
 
@@ -87,7 +103,7 @@ class TraceTree {
       data: JSON.stringify(Array.from(this.data.entries())),
       registry: JSON.stringify(Array.from(this.registry.entries())),
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-      processed: JSON.stringify(this.processed)
+      processed: JSON.stringify(this.processed),
     };
   }
 
@@ -110,8 +126,15 @@ class TraceTree {
     }
     parent && this.adjList?.get(parent).push(id);
 
-    if (!results || results.length === 0) {   // no match case
-      const regobj = {funcName, paramCount, parent, fileUrl:'', lineNumber:-1};
+    if (!results || results.length === 0) {
+      // no match case
+      const regobj = {
+        funcName,
+        paramCount,
+        parent,
+        fileUrl: "",
+        lineNumber: -1,
+      };
       this.registry?.set(regobj, id);
       this.reverseReg?.set(id, regobj);
       this.adjList?.set(id, []);
@@ -136,8 +159,15 @@ class TraceTree {
       });
     });
 
-    if (dataObj.length > 1) {  // multiple matches
-      const regobj = {funcName, paramCount, parent, fileUrl:'', lineNumber:-1};
+    if (dataObj.length > 1) {
+      // multiple matches
+      const regobj = {
+        funcName,
+        paramCount,
+        parent,
+        fileUrl: "",
+        lineNumber: -1,
+      };
       this.registry?.set(regobj, id);
       this.reverseReg?.set(id, regobj);
       this.adjList?.set(id, []);
@@ -146,7 +176,13 @@ class TraceTree {
     }
 
     // single match
-    const regobj = {funcName, paramCount, parent:'', fileUrl:dataObj[0].fileUrl, lineNumber:dataObj[0].lineNumber};
+    const regobj = {
+      funcName,
+      paramCount,
+      parent: "",
+      fileUrl: dataObj[0].fileUrl,
+      lineNumber: dataObj[0].lineNumber,
+    };
     // check if already visited
     if (this.registry?.get(regobj)) {
       let oldId = this.registry.get(regobj);
@@ -162,8 +198,8 @@ class TraceTree {
     this.data?.set(id, dataObj);
 
     const funcCalled = getFunctionCalled(dataObj[0]);
-    if(depth >= 2) {
-      return ;
+    if (depth >= 2) {
+      return;
     }
     this.processed.push(id);
     for (var func of funcCalled) {
@@ -204,7 +240,6 @@ function b(){
 
 adj[a]=b
 */
-
 
 /*
 funcName
