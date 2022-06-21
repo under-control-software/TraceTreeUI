@@ -2,7 +2,12 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
-import { MagnifyingGlass } from "phosphor-react";
+import {
+  MagnifyingGlass,
+  TreeStructure,
+  File,
+  ArrowRight,
+} from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
   return <line {...restProps} stroke="grey" />;
@@ -276,7 +281,7 @@ class App extends Component {
               placeholder="Number of Arguments"
             />
             <button className="run-button" onClick={this.run}>
-              Run
+              <TreeStructure size={25} weight="bold" />
             </button>
           </div>
         </div>
@@ -301,28 +306,35 @@ class App extends Component {
               />
             </div>
             <div className="right-box">
+              <div style={{ fontSize: "1.2em", color: "white" }}>
+                <b>Please select the correct reference</b>
+              </div>
               {this.state.displayBox ? (
                 <div>
-                  <div style={{ fontSize: "1.2em" }}>
-                    <b>Please select the correct reference</b>
-                  </div>
                   <div className="radio-buttons">
                     <br></br>
-                    <Radio.Group onChange={this.onChange}>
+                    <Radio.Group
+                      onChange={this.onChange}
+                      value={this.state.radioValue}
+                    >
                       {this.state.curNode
                         ? this.state.curNode.data.map((e, ind) => {
                             return (
                               <div
                                 style={{
-                                  backgroundColor:
-                                    ind % 2 ? "#408ffd3a" : "white",
-                                  padding: "0.2rem",
                                   border:
                                     this.state.radioValue === e
                                       ? "2px solid #408efd"
                                       : "",
-                                  borderRadius: "5px",
+                                  // add a glowing shadow
+                                  boxShadow:
+                                    this.state.radioValue === e
+                                      ? "0px 0px 10px #408efd"
+                                      : "",
                                 }}
+                                className={`card card-${
+                                  Math.floor(ind % 5) + 1
+                                }`}
                               >
                                 <Radio
                                   value={e}
@@ -334,23 +346,25 @@ class App extends Component {
                                   }}
                                 >
                                   {" "}
-                                  File: {e.file}
-                                  <div
-                                    style={{
-                                      fontSize: "0.88em",
-                                      marginTop: "3px",
-                                      marginLeft: "28px",
-                                      paddingBottom: "8px",
-                                    }}
-                                  >
+                                  <div className="file-name-cont">
+                                    <File
+                                      size={18}
+                                      className="card__icon"
+                                      weight="bold"
+                                    />{" "}
+                                    {e.file}
+                                  </div>
+                                  <div className="file-link-cont">
+                                    <span className="preview">
+                                      {e.preview}...
+                                    </span>
                                     <a
                                       className="code-prev"
                                       href={e.url}
                                       target="_blank"
                                     >
-                                      Line
+                                      <ArrowRight size={20} weight="bold" />
                                     </a>
-                                    : {e.preview}...
                                   </div>
                                 </Radio>
                               </div>
