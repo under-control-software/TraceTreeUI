@@ -121,10 +121,15 @@ class App extends Component {
     window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" });
   run() {
     var funcName = document.getElementById("func-name").value;
+    // console.log(funcName);
     // funcName = "getAccessControlAllowCredentials";
-    funcName = "purgeUnreferencedEntries";
-    var numArgs = document.getElementById("num-args").value;
-    numArgs = 0;
+    // funcName = "purgeUnreferencedEntries";
+    // console.log(funcName);
+    var numArgs = parseInt(document.getElementById("num-args").value);
+    // console.log(numArgs);
+    // console.log(typeof(numArgs));
+    // numArgs = 0;
+    // console.log(typeof(numArgs));
     if (funcName === "" || !funcName) {
       alert("Please enter a function name");
       return;
@@ -336,6 +341,15 @@ class App extends Component {
                   ></div>
                   <div className="index-item-text">
                     Intermediate or Terminal Nodes
+                  </div>
+                </div>
+                <div className="index-item">
+                  <div
+                    className="index-item-icon"
+                    style={{ backgroundColor: "blue" }}
+                  ></div>
+                  <div className="index-item-text">
+                    Function Declaration do not exist in repo.
                   </div>
                 </div>
               </div>
