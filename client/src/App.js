@@ -58,6 +58,7 @@ class App extends Component {
   };
 
   Node = ({ node }) => {
+    // console.log(node);
     const fontSize = 14;
     const radius = 10;
     let color = node.start ? "red" : "black";
@@ -109,7 +110,7 @@ class App extends Component {
         <circle fill={`${color}`} stroke="black" r={sizes.radius} />
         <g style={{ fontSize: sizes.textSize + "px" }}>
           <text x={sizes.radius + 7} y={sizes.radius / 2}>
-            {node.name.funcName + "()"}
+            {node.name.funcName + "(" + node.name.paramCount + " arg(s))"}
           </text>
         </g>
       </a>
