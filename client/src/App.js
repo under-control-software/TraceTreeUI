@@ -258,7 +258,6 @@ class App extends Component {
         this.setState({
           nodes: nodes,
         });
-        window.scrollTo(1000, 0);
       });
   };
 
