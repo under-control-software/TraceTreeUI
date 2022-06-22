@@ -270,18 +270,24 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="header-search">
-          <div className="App-header">
-            <div className="App-title">
+        <div className={`header-search ${this.state.nodes && "nav-search"}`}>
+          <div className={`App-header ${this.state.nodes && "nav-App-header"}`}>
+            <div className={`App-title ${this.state.nodes && "nav-App-title"}`}>
               Trace
-              <span className="header-icon">
+              <span
+                className={`header-icon ${
+                  this.state.nodes && "nav-header-icon"
+                }`}
+              >
                 <TreeEvergreen size={50} weight="duotone" />
               </span>
               ree
             </div>
           </div>
 
-          <div className="search-cont">
+          <div
+            className={`search-cont ${this.state.nodes && "nav-search-cont"}`}
+          >
             {/* <label>
                 Function name: <span style={{ color: "white" }}>..</span>
               </label> */}
@@ -290,7 +296,9 @@ class App extends Component {
               type="text"
               size={31}
               id="func-name"
-              className="name-search-bar"
+              className={`name-search-bar ${
+                this.state.nodes && "nav-name-search-bar"
+              }`}
               placeholder="Search Function by Name"
             />
 
@@ -301,10 +309,15 @@ class App extends Component {
               type="number"
               size={8}
               id="num-args"
-              className="search-bar num-bar"
+              className={`search-bar num-bar ${
+                this.state.nodes && "nav-num-bar"
+              }`}
               placeholder="Number of Arguments"
             />
-            <button className="run-button" onClick={this.run}>
+            <button
+              className={`run-button ${this.state.nodes && "nav-run-button"}`}
+              onClick={this.run}
+            >
               <TreeStructure size={25} weight="bold" />
             </button>
           </div>
