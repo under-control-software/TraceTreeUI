@@ -144,6 +144,8 @@ class App extends Component {
       this.display(node);
     };
 
+    console.log(document.getElementById("select-button"));
+
     return (
       <a
         style={{ cursor: "pointer" }}
@@ -153,6 +155,7 @@ class App extends Component {
             this.setState({
               option: node.data[0],
             });
+            // document.getElementsByClassName("select-button")[0].click();
           } else {
             this.setState({
               option: null,
@@ -524,7 +527,7 @@ class App extends Component {
                 <div
                   className="left-box"
                   style={{
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: "14px",
                     fontWeight: "100",
                     letterSpacing: "1px",
@@ -650,6 +653,7 @@ class App extends Component {
                         <div style={{ textAlign: "center" }}>
                           <button
                             className="select-button"
+                            id="select-button"
                             onClick={this.selectOption}
                           >
                             Select
