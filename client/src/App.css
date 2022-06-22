@@ -12,6 +12,7 @@
 
 .App-title {
   padding: 10px;
+  padding-bottom: 0;
   font-size: 2.1em;
   font-weight: 300;
   color: white;
@@ -95,6 +96,7 @@
   padding-right: 12px;
   border-bottom-right-radius: 0.4rem;
   border-top-right-radius: 0.4rem;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 button:hover {
@@ -123,6 +125,7 @@ button:hover {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  /* give a livitating shadow */
 }
 .search-cont {
 }
@@ -136,6 +139,7 @@ button:hover {
   border-right: 1px solid hsl(191, 75%, 60%);
   /* text color */
   color: rgb(100, 100, 100);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .num-bar {
@@ -148,6 +152,7 @@ button:hover {
   background-color: rgba(255, 255, 255, 0.9);
   border-left: 1px solid hsl(191, 75%, 60%);
   color: rgb(100, 100, 100);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .header-search {
@@ -159,6 +164,9 @@ button:hover {
   height: 100vh;
   /* ignore overflow */
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 code-preview {
@@ -346,13 +354,48 @@ code-preview {
 .nav-name-search-bar {
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
+  box-shadow: none;
 }
 
 .nav-num-bar {
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
+  box-shadow: none;
 }
 
 .nav-run-button {
   padding: 0.24rem 0.5rem;
+  box-shadow: none;
+}
+
+.sub-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: white;
+  gap: 0.1rem;
+  font-size: 0.9rem;
+}
+
+.footer-image-cont {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.footer-image {
+  width: 100%;
+  height: auto;
+  object-fit: scale-down;
+  -webkit-mask-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    from(rgba(0, 0, 0, 1)),
+    to(rgba(0, 0, 0, 0))
+  );
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
 }

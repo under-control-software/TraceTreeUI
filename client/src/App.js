@@ -2,6 +2,7 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
+import footer from "./assets/footer.png";
 import {
   MagnifyingGlass,
   TreeStructure,
@@ -285,6 +286,12 @@ class App extends Component {
               </span>
               ree
             </div>
+            {!this.state.nodes && (
+              <div className="sub-title">
+                Search <ArrowRight size={14} /> Trace <ArrowRight size={14} />{" "}
+                Debug
+              </div>
+            )}
           </div>
 
           <div
@@ -323,6 +330,11 @@ class App extends Component {
               <TreeStructure size={25} weight="bold" />
             </button>
           </div>
+          {!this.state.nodes && (
+            <div className="footer-image-cont">
+              <img src={footer} alt="footer" className="footer-image" />
+            </div>
+          )}
         </div>
         <br></br>
         <br></br>
