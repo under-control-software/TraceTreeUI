@@ -533,7 +533,7 @@ class App extends Component {
                 <div
                   className="left-box"
                   style={{
-                    fontFamily: "Montserrat, sans-serif",
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: "14px",
                     fontWeight: "100",
                     letterSpacing: "1px",
