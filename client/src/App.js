@@ -520,42 +520,60 @@ class App extends Component {
                       </div>
                     </div>
                   </div>
-                  <Graph
-                    data={this.state.nodes}
-                    NodeComponent={this.Node}
-                    LineComponent={Line}
-                    nodeDistance={500}
-                    zoomDepth={2}
-                    hoverOpacity={0.3}
-                    enableDrag={true}
-                    pullIn={false}
-                  />
+                  {this.state.message === "Please wait..." ? (
+                    <div className="spinner-left">
+                      <LoadingSpin
+                        primaryColor={"#408efd"}
+                        secondaryColor={"hsl(191, 75%, 60%)"}
+                      />
+                    </div>
+                  ) : (
+                    <Graph
+                      data={this.state.nodes}
+                      NodeComponent={this.Node}
+                      LineComponent={Line}
+                      nodeDistance={500}
+                      zoomDepth={2}
+                      hoverOpacity={0.3}
+                      enableDrag={true}
+                      pullIn={false}
+                    />
+                  )}
                 </div>
               ) : (
                 <div
                   className="left-box"
                   style={{
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "Montserrat, sans-serif",
                     fontSize: "14px",
                     fontWeight: "100",
                     letterSpacing: "1px",
                   }}
                 >
-                  <Tree
-                    data={this.state.treeStructure}
-                    orientation="vertical"
-                    circleRadius="10"
-                    onClick={this.changeNode}
-                    collapsible={false}
-                    separation={{
-                      siblings: 1,
-                      nonSiblings: 1,
-                    }}
-                    translate={{
-                      x: 500,
-                      y: 100,
-                    }}
-                  />
+                  {this.state.message === "Please wait..." ? (
+                    <div className="spinner-left">
+                      <LoadingSpin
+                        primaryColor={"#408efd"}
+                        secondaryColor={"hsl(191, 75%, 60%)"}
+                      />
+                    </div>
+                  ) : (
+                    <Tree
+                      data={this.state.treeStructure}
+                      orientation="vertical"
+                      circleRadius="10"
+                      onClick={this.changeNode}
+                      collapsible={false}
+                      separation={{
+                        siblings: 1,
+                        nonSiblings: 1,
+                      }}
+                      translate={{
+                        x: 500,
+                        y: 100,
+                      }}
+                    />
+                  )}
                 </div>
               )}
 
@@ -582,95 +600,105 @@ class App extends Component {
                 <div style={{ fontSize: "1.2em", color: "white" }}>
                   <b>Please select the correct reference</b>
                 </div>
-                {this.state.displayBox ? (
-                  <div>
-                    <p style={{ color: "white" }}>
-                      <i>
-                        {this.state.reverseReg.get(this.state.curNode.id)
-                          .funcName +
-                          "(" +
-                          this.state.reverseReg.get(this.state.curNode.id)
-                            .paramCount +
-                          ")"}
-                      </i>
-                    </p>
-                    <div className="radio-buttons">
-                      <br></br>
-                      <Radio.Group
-                        onChange={this.onChange}
-                        value={this.state.radioValue}
-                      >
-                        {this.state.curNode
-                          ? this.state.curNode.data.map((e, ind) => {
-                              return (
-                                <div
-                                  style={{
-                                    border:
-                                      this.state.radioValue === e
-                                        ? "2px solid white"
-                                        : "",
-                                    // add a glowing shadow
-                                    boxShadow:
-                                      this.state.radioValue === e
-                                        ? "0px 0px 10px white"
-                                        : "",
-                                  }}
-                                  className={`card card-${
-                                    Math.floor(ind % 5) + 1
-                                  }`}
-                                >
-                                  <Radio
-                                    value={e}
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() => {
-                                      this.setState({
-                                        radioValue: e,
-                                      });
+
+                {this.state.displayBox &&
+                  this.state.message !== "Please wait..." && (
+                    <div>
+                      <p style={{ color: "white" }}>
+                        <i>
+                          {this.state.reverseReg.get(this.state.curNode.id)
+                            .funcName +
+                            "(" +
+                            this.state.reverseReg.get(this.state.curNode.id)
+                              .paramCount +
+                            ")"}
+                        </i>
+                      </p>
+                      <div className="radio-buttons">
+                        <br></br>
+                        <Radio.Group
+                          onChange={this.onChange}
+                          value={this.state.radioValue}
+                        >
+                          {this.state.curNode
+                            ? this.state.curNode.data.map((e, ind) => {
+                                return (
+                                  <div
+                                    style={{
+                                      border:
+                                        this.state.radioValue === e
+                                          ? "2px solid white"
+                                          : "",
+                                      // add a glowing shadow
+                                      boxShadow:
+                                        this.state.radioValue === e
+                                          ? "0px 0px 10px white"
+                                          : "",
                                     }}
+                                    className={`card card-${
+                                      Math.floor(ind % 5) + 1
+                                    }`}
                                   >
-                                    {" "}
-                                    <div className="file-name-cont">
-                                      <File
-                                        size={18}
-                                        className="card__icon"
-                                        weight="bold"
-                                      />{" "}
-                                      {/* trim the file to max of length 30 */}
-                                      {e.file.substring(0, 30)}
-                                    </div>
-                                    <div className="file-link-cont">
-                                      <span className="preview">
-                                        {e.preview}...
-                                      </span>
-                                      <a
-                                        className="code-prev"
-                                        href={e.url}
-                                        target="_blank"
-                                      >
-                                        <ArrowRight size={20} weight="bold" />
-                                      </a>
-                                    </div>
-                                  </Radio>
-                                </div>
-                              );
-                            })
-                          : null}
-                      </Radio.Group>
-                      <br></br>
-                      {this.state.curNode && this.state.selectValid ? (
-                        <div style={{ textAlign: "center" }}>
-                          <button
-                            className="select-button"
-                            onClick={this.selectOption}
-                          >
-                            Select
-                          </button>
-                          <br></br>
-                        </div>
-                      ) : null}
+                                    <Radio
+                                      value={e}
+                                      style={{ cursor: "pointer" }}
+                                      onClick={() => {
+                                        this.setState({
+                                          radioValue: e,
+                                        });
+                                      }}
+                                    >
+                                      {" "}
+                                      <div className="file-name-cont">
+                                        <File
+                                          size={18}
+                                          className="card__icon"
+                                          weight="bold"
+                                        />{" "}
+                                        {/* trim the file to max of length 30 */}
+                                        {e.file.substring(0, 30)}
+                                      </div>
+                                      <div className="file-link-cont">
+                                        <span className="preview">
+                                          {e.preview}...
+                                        </span>
+                                        <a
+                                          className="code-prev"
+                                          href={e.url}
+                                          target="_blank"
+                                        >
+                                          <ArrowRight size={20} weight="bold" />
+                                        </a>
+                                      </div>
+                                    </Radio>
+                                  </div>
+                                );
+                              })
+                            : null}
+                        </Radio.Group>
+                        <br></br>
+                        {this.state.curNode && this.state.selectValid ? (
+                          <div style={{ textAlign: "center" }}>
+                            <button
+                              className="select-button"
+                              onClick={this.selectOption}
+                            >
+                              Select
+                            </button>
+                            <br></br>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
+                  )}
+                {this.state.message === "Please wait..." && (
+                  <div className="spinner-left">
+                    <LoadingSpin
+                      primaryColor={"#408efd"}
+                      secondaryColor={"hsl(191, 75%, 60%)"}
+                    />
                   </div>
-                ) : null}
+                )}
               </div>
             </div>
           </div>
