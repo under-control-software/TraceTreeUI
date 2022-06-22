@@ -18,11 +18,12 @@ class TraceTree {
       this.data = new Map(JSON.parse(obj["data"]));
       this.reverseReg = new Map(JSON.parse(obj["reverseReg"]));
       this.processed = JSON.parse(obj["processed"]);
+      this.start = obj['start'];
     }
   }
 
-  async run(funcName, paramCount) {
-    await this.generateTree(funcName, paramCount, "", true);
+  returnData() {
+    const treeStructure = this.generateTreeStructure(this.start, []);
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
@@ -30,7 +31,31 @@ class TraceTree {
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
       processed: JSON.stringify(this.processed),
       start: this.start,
+      treeStructure: JSON.stringify(treeStructure)
     };
+  }
+
+  generateTreeStructure(node, visited) {
+    const res = {name: node};
+    if (visited.includes(node)) {
+      res['attributes'] = {
+        recursion : true
+      }
+      return res;
+    }
+    if (this.adjList?.get(node).length !== 0) {
+      visited.push(node);
+      res['children'] = this.adjList?.get(node).map(value => {
+        this.generateTreeStructure(value, visited);
+      });
+      visited.pop();
+    }
+    return res;
+  }
+
+  async run(funcName, paramCount) {
+    await this.generateTree(funcName, paramCount, "", true);
+    return this.returnData();
   }
 
   async expand(funcName, paramCount, funcObj, parent) {
@@ -77,13 +102,7 @@ class TraceTree {
         this.adjList?.delete(oldid);
         this.data?.delete(oldid);
       }
-      return {
-        adjList: JSON.stringify(Array.from(this.adjList.entries())),
-        data: JSON.stringify(Array.from(this.data.entries())),
-        registry: JSON.stringify(Array.from(this.registry.entries())),
-        reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-        processed: JSON.stringify(this.processed),
-      };
+      return this.returnData();
     }
 
     let id = this.registry.get(JSON.stringify(oldRegobj));
@@ -98,13 +117,7 @@ class TraceTree {
       await this.generateTree(func.funcName, func.paramCount, id, false, 1);
     }
 
-    return {
-      adjList: JSON.stringify(Array.from(this.adjList.entries())),
-      data: JSON.stringify(Array.from(this.data.entries())),
-      registry: JSON.stringify(Array.from(this.registry.entries())),
-      reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
-      processed: JSON.stringify(this.processed),
-    };
+    return this.returnData();
   }
 
   async generateTree(
@@ -197,10 +210,10 @@ class TraceTree {
     this.adjList?.set(id, []);
     this.data?.set(id, dataObj);
 
-    const funcCalled = getFunctionCalled(dataObj[0]);
     if (depth >= 2) {
       return;
     }
+    const funcCalled = getFunctionCalled(dataObj[0]);
     this.processed.push(id);
     for (var func of funcCalled) {
       await this.generateTree(
@@ -225,32 +238,17 @@ class TraceTree {
 
 exports.TraceTree = TraceTree;
 
-/*
-function a(){
-    ...
-    c=b();
-    d=e();
-    x=b();
-    a();
-}
-
-function b(){
-    s=e();
-}
-
-adj[a]=b
-*/
 
 /*
 funcName
 -> Use api for funcname
 
 -> no match
-  funcName,paramCount, '', -1, parent-id
+  funcName,paramCount,parent-id '', -1,
 
 ->single match
-  funcname,paramCount,fileName,lineno., parent-id:''
+  funcname,paramCount,parent-id:'',fileName,lineno.
 
 ->multiple match
-  funcname,paramCount, '', -1, parent-id
+  funcname,paramCount, parent-id, '', -1
 */

@@ -20,6 +20,7 @@ async function getBody(funcName, paramCount) {
   query = `
     context:global repo:^github.com/spring-projects/spring-framework$ 
     :[~\\s]${funcName}(...) {...}
+    -file:.*test.*
     patternType:structural lang:Java case:yes count:all
     `;
 
@@ -72,6 +73,7 @@ function getFunctionCalled(funcBody) {
     return [];
   }
   
+  // referencing funcBody itself (not a copy)
   const value = funcBody.code;
   value.shift();
   calledFunctions = value.map(line => {
