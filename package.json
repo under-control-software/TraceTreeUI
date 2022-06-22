@@ -26,6 +26,7 @@
         "node-fetch": "^1.7.3",
         "phosphor-react": "^1.4.1",
         "react-d3-tree": "^1.17.1",
-        "react-loading-spin": "^2.1.9"
+        "react-loading-spin": "^2.1.9",
+        "react-switch": "^7.0.0"
     }
 }

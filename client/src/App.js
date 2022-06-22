@@ -13,6 +13,8 @@ import {
   CaretRight,
   CaretLeft,
   TreeEvergreen,
+  Graph as GraphIcon,
+  Tree as TreeIcon,
 } from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
@@ -411,23 +413,37 @@ class App extends Component {
           )}
         </div>
         <br></br>
-        <br></br>
         <div style={{ textAlign: "center", fontSize: "1.2em" }}>
           {this.state.message}
         </div>
         <br></br>
+
         {!this.state.nodes ? null : (
           <div>
-            <Switch
-              checkedChildren="a"
-              unCheckedChildren="b"
-              defaultChecked
-              onChange={() => {
+            <div
+              className="selecter"
+              onClick={() => {
                 this.setState({
-                  displayGraph: !this.state.displayGraph,
+                  displayGraph: this.state.displayGraph ? false : true,
                 });
               }}
-            />
+            >
+              <div
+                className={`selecter-button ${
+                  this.state.displayGraph && "selecter-selected"
+                }`}
+              >
+                <GraphIcon size={20} />
+              </div>
+              <div
+                className={`selecter-button ${
+                  !this.state.displayGraph && "selecter-selected"
+                }`}
+              >
+                <TreeIcon size={20} />
+              </div>
+            </div>
+
             <div style={{ height: "80vh", display: "flex", width: "100%" }}>
               {this.state.displayGraph ? (
                 <div
