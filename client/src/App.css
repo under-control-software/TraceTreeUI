@@ -209,7 +209,7 @@ code-preview {
 .card__icon {
   position: relative;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
 }
 
 .card__link::after {
@@ -271,7 +271,7 @@ code-preview {
   align-items: center;
   justify-content: flex-start;
   gap: 3px;
-  color: white;
+  color: black;
 }
 
 .preview {
