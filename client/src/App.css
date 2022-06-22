@@ -12,8 +12,11 @@
 
 .App-title {
   padding: 10px;
-  font-size: 2.1em;
-  font-weight: 300;
+  padding-bottom: 0;
+  font-size: 2.8rem;
+  font-weight: 100;
+  /* reduce gap between letters */
+  letter-spacing: -0.02em;
   color: white;
   /* increase letter gap */
   line-height: 3rem;
@@ -84,15 +87,18 @@
 
 .run-button {
   font-size: 1.1em;
-  border: 1px solid #2246ce;
+  border: 1px solid hsl(191, 75%, 60%);
+  border-left: 0;
   background-color: #408efd;
-  padding: 0.44rem;
+  padding: 0.435rem;
   cursor: pointer;
   color: white;
+
   padding-left: 12px;
   padding-right: 12px;
-  border-bottom-right-radius: 0.3rem;
-  border-top-right-radius: 0.3rem;
+  border-bottom-right-radius: 0.4rem;
+  border-top-right-radius: 0.4rem;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 button:hover {
@@ -121,31 +127,34 @@ button:hover {
   flex-direction: row;
   align-items: center;
   justify-content: center;
+  /* give a livitating shadow */
 }
 .search-cont {
 }
 .name-search-bar {
   width: 55%;
   padding: 0.8rem;
-  border: 2px solid white;
-  border-top-left-radius: 0.3rem;
-  border-bottom-left-radius: 0.3rem;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-right: 1px solid white;
+  border: 2px solid hsl(191, 75%, 60%);
+  border-top-left-radius: 0.4rem;
+  border-bottom-left-radius: 0.4rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-right: 1px solid hsl(191, 75%, 60%);
   /* text color */
   color: rgb(100, 100, 100);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .num-bar {
   padding: 0.8rem;
   width: 10%;
   min-width: 50px;
-  border: 2px solid #ccc;
+  border: 2px solid hsl(191, 75%, 60%);
   /* border-top-right-radius: 0.2rem;
   border-bottom-right-radius: 0.2rem; */
-  background-color: rgba(255, 255, 255, 0.8);
-  border-left: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-left: 1px solid hsl(191, 75%, 60%);
   color: rgb(100, 100, 100);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .header-search {
@@ -157,6 +166,9 @@ button:hover {
   height: 100vh;
   /* ignore overflow */
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 code-preview {
@@ -330,7 +342,9 @@ code-preview {
   justify-content: center;
   padding: 0;
   padding-top: 0.1rem;
-  padding-left: 0.5rem;
+  padding-left: 0.1rem;
+  /* scale to 0.8 */
+  transform: scale(0.8);
 }
 
 .nav-search-cont {
@@ -342,25 +356,48 @@ code-preview {
 .nav-name-search-bar {
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
+  box-shadow: none;
 }
 
 .nav-num-bar {
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
+  box-shadow: none;
 }
 
 .nav-run-button {
   padding: 0.24rem 0.5rem;
+  box-shadow: none;
 }
 
-.node__root > circle {
-  fill: red;
+.sub-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: white;
+  gap: 0.3rem;
+  font-size: 0.9rem;
 }
 
-.node__branch > circle {
-  fill: yellow;
+.footer-image-cont {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.node__leaf > circle {
-  fill: green;
+.footer-image {
+  width: 100%;
+  height: auto;
+  object-fit: scale-down;
+  -webkit-mask-image: -webkit-gradient(
+    linear,
+    left bottom,
+    left top,
+    from(rgba(0, 0, 0, 1)),
+    to(rgba(0, 0, 0, 0))
+  );
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 1));
 }

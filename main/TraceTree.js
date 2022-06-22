@@ -36,10 +36,10 @@ class TraceTree {
   }
 
   generateTreeStructure(node, visited) {
-    const res = { name: node };
+    const res = { name: this.reverseReg.get(node).funcName, id: node };
     if (visited.includes(node)) {
       res["attributes"] = {
-        recursion: true,
+        Recursion: "",
       };
       return res;
     }
@@ -49,6 +49,10 @@ class TraceTree {
         return this.generateTreeStructure(value, visited);
       });
       visited.pop();
+    } else {
+      res["attributes"] = {
+        Click: "Expand",
+      };
     }
     return res;
   }
@@ -59,7 +63,7 @@ class TraceTree {
   }
 
   async expand(funcName, paramCount, funcObj, parent) {
-    // parent -> '' means single match
+    // parent -> "" means single match
     const regobj = {
       funcName,
       paramCount,
@@ -137,7 +141,7 @@ class TraceTree {
     if (start) {
       this.start = id;
     }
-    parent && this.adjList?.get(parent).push(id);
+    // parent && this.adjList?.get(parent).push(id);
 
     if (!results || results.length === 0) {
       // no match case
@@ -150,6 +154,7 @@ class TraceTree {
       };
       this.registry?.set(JSON.stringify(regobj), id);
       this.reverseReg?.set(id, regobj);
+      parent && this.adjList?.get(parent).push(id);
       this.adjList?.set(id, []);
       this.data?.set(id, []);
       return;
@@ -183,6 +188,7 @@ class TraceTree {
       };
       this.registry?.set(JSON.stringify(regobj), id);
       this.reverseReg?.set(id, regobj);
+      parent && this.adjList?.get(parent).push(id);
       this.adjList?.set(id, []);
       this.data?.set(id, dataObj);
       return;
@@ -207,6 +213,7 @@ class TraceTree {
 
     this.registry?.set(JSON.stringify(regobj), id);
     this.reverseReg?.set(id, regobj);
+    parent && this.adjList?.get(parent).push(id);
     this.adjList?.set(id, []);
     this.data?.set(id, dataObj);
 

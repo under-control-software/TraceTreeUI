@@ -2,6 +2,7 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
+import footer from "./assets/footer.png";
 import Tree from "react-d3-tree";
 import {
   MagnifyingGlass,
@@ -90,6 +91,7 @@ class App extends Component {
       processed: [],
       displayBox: true,
       viewRight: false,
+      treeStructure: null,
     };
 
     this.run = this.run.bind(this);
@@ -101,6 +103,26 @@ class App extends Component {
 
   changeNode = (e) => {
     console.log(e);
+    // if (e.data.length === 1) {
+    //   this.setState({
+    //     option: node.data[0],
+    //   });
+    // } else {
+    //   this.setState({
+    //     option: null,
+    //   });
+    // }
+    // this.setState({
+    //   displayBox: true,
+    // });
+    // if (node.data) {
+    //   hoverBox();
+    // } else {
+    //   this.display(null);
+    // }
+    this.setState({
+      viewRight: true,
+    });
   };
 
   // display = (node) => {
@@ -142,26 +164,26 @@ class App extends Component {
   //       style={{ cursor: "pointer" }}
   //       id="node"
   //       onClick={() => {
-  //         if (node.data.length === 1) {
-  //           this.setState({
-  //             option: node.data[0],
-  //           });
-  //         } else {
-  //           this.setState({
-  //             option: null,
-  //           });
-  //         }
-  //         this.setState({
-  //           displayBox: true,
-  //         });
-  //         if (node.data) {
-  //           hoverBox();
-  //         } else {
-  //           this.display(null);
-  //         }
-  //         this.setState({
-  //           viewRight: true,
-  //         });
+  // if (node.data.length === 1) {
+  //   this.setState({
+  //     option: node.data[0],
+  //   });
+  // } else {
+  //   this.setState({
+  //     option: null,
+  //   });
+  // }
+  // this.setState({
+  //   displayBox: true,
+  // });
+  // if (node.data) {
+  //   hoverBox();
+  // } else {
+  //   this.display(null);
+  // }
+  // this.setState({
+  //   viewRight: true,
+  // });
   //       }}
   //     >
   //       <circle fill={`${color}`} stroke="black" r={sizes.radius} />
@@ -339,10 +361,16 @@ class App extends Component {
                   this.state.nodes && "nav-header-icon"
                 }`}
               >
-                <TreeEvergreen size={50} weight="duotone" />
+                <TreeEvergreen size={55} weight="duotone" />
               </span>
               ree
             </div>
+            {!this.state.nodes && (
+              <div className="sub-title">
+                Search <ArrowRight size={14} /> Trace <ArrowRight size={14} />{" "}
+                Debug
+              </div>
+            )}
           </div>
 
           <div
@@ -381,6 +409,11 @@ class App extends Component {
               <TreeStructure size={25} weight="bold" />
             </button>
           </div>
+          {!this.state.nodes && (
+            <div className="footer-image-cont">
+              <img src={footer} alt="footer" className="footer-image" />
+            </div>
+          )}
         </div>
         <br></br>
         <br></br>
@@ -388,15 +421,16 @@ class App extends Component {
           {this.state.message}
         </div>
         <br></br>
-        {this.state.nodes ? null : (
+        {!this.state.treeStructure ? null : (
           <div style={{ height: "80vh", display: "flex", width: "100%" }}>
             <div className="left-box">
               <Tree
-                data={orgChart}
+                data={this.state.treeStructure}
                 orientation="vertical"
                 circleRadius="10"
                 style={styling}
                 onClick={this.changeNode}
+                collapsible={false}
               />
             </div>
             <div
