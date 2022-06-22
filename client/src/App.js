@@ -509,16 +509,25 @@ class App extends Component {
                       </div>
                     </div>
                   </div>
-                  <Graph
-                    data={this.state.nodes}
-                    NodeComponent={this.Node}
-                    LineComponent={Line}
-                    nodeDistance={500}
-                    zoomDepth={2}
-                    hoverOpacity={0.3}
-                    enableDrag={true}
-                    pullIn={false}
-                  />
+                  {this.state.message === "Please wait..." ? (
+                    <div className="spinner-left">
+                      <LoadingSpin
+                        primaryColor={"#408efd"}
+                        secondaryColor={"hsl(191, 75%, 60%)"}
+                      />
+                    </div>
+                  ) : (
+                    <Graph
+                      data={this.state.nodes}
+                      NodeComponent={this.Node}
+                      LineComponent={Line}
+                      nodeDistance={500}
+                      zoomDepth={2}
+                      hoverOpacity={0.3}
+                      enableDrag={true}
+                      pullIn={false}
+                    />
+                  )}
                 </div>
               ) : (
                 <div
