@@ -1,8 +1,9 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import "./App.css";
-import { Radio } from "antd";
+import { Radio, Switch } from "antd";
 import Graph from "react-graph-network";
 import footer from "./assets/footer.png";
+import Tree from "react-d3-tree";
 import LoadingSpin from "react-loading-spin";
 import {
   MagnifyingGlass,
@@ -11,15 +12,12 @@ import {
   ArrowRight,
   CaretRight,
   CaretLeft,
-  Tree,
   TreeEvergreen,
 } from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
   return <line {...restProps} stroke="grey" />;
 };
-
-// getAccessControlAllowCredentials
 
 class App extends Component {
   constructor() {
@@ -41,15 +39,74 @@ class App extends Component {
       processed: [],
       displayBox: true,
       viewRight: false,
+      treeStructure: null,
+      displayGraph: false,
     };
 
     this.run = this.run.bind(this);
     this.Node = this.Node.bind(this);
     this.display = this.display.bind(this);
+    this.displayTreeNode = this.displayTreeNode.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.changeNode = this.changeNode.bind(this);
   }
 
+  changeNode = (e) => {
+    console.log(e);
+    const data = this.state.data.get(e._id);
+    console.log(data);
+    if (
+      (e.attributes && e.attributes.Branch) ||
+      (e.attributes && e.attributes.Definition)
+    ) {
+      this.setState({
+        option: null,
+      });
+      this.setState({
+        displayBox: false,
+      });
+      this.setState({
+        viewRight: false,
+      });
+    } else {
+      if (data.length === 1) {
+        this.setState({
+          option: data[0],
+        });
+      } else {
+        this.setState({
+          option: null,
+        });
+      }
+      this.setState({
+        displayBox: true,
+      });
+      if (data) {
+        this.displayTreeNode(e);
+      } else {
+        this.display(null);
+      }
+      this.setState({
+        viewRight: true,
+      });
+    }
+  };
+
+  displayTreeNode = (e) => {
+    const node = {
+      id: e._id,
+      data: this.state.data.get(e._id),
+    };
+    this.display(node);
+  };
+
   display = (node) => {
+    if (!node) {
+      this.setState({
+        curNode: null,
+      });
+      return;
+    }
     this.setState({
       curNode: node,
       selectValid:
@@ -119,19 +176,16 @@ class App extends Component {
       </a>
     );
   };
+
   scrollToMyRef = () =>
     window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" });
+
   run() {
     var funcName = document.getElementById("func-name").value;
-    // console.log(funcName);
     // funcName = "getAccessControlAllowCredentials";
-    // funcName = "purgeUnreferencedEntries";
-    // console.log(funcName);
+    funcName = "purgeUnreferencedEntries";
     var numArgs = parseInt(document.getElementById("num-args").value);
-    // console.log(numArgs);
-    // console.log(typeof(numArgs));
-    // numArgs = 0;
-    // console.log(typeof(numArgs));
+    numArgs = 0;
     if (funcName === "" || !funcName) {
       alert("Please enter a function name");
       return;
@@ -150,7 +204,6 @@ class App extends Component {
       body: JSON.stringify({ name: funcName, paramCount: numArgs }),
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
       .then((data) => {
@@ -163,6 +216,7 @@ class App extends Component {
           reverseReg: new Map(JSON.parse(data.reverseReg)),
           processed: JSON.parse(data.processed),
           start: data.start,
+          treeStructure: JSON.parse(data.treeStructure),
         });
         const nodes = {
           nodes: [],
@@ -182,7 +236,11 @@ class App extends Component {
         this.setState({
           nodes: nodes,
         });
+        this.setState({
+          viewRight: false,
+        });
         this.scrollToMyRef();
+        console.log(this.state.nodes);
       });
   }
 
@@ -198,7 +256,7 @@ class App extends Component {
       alert("Please select an option");
       return;
     }
-    console.log("global option", this.state.curNode);
+
     let parentid;
     if (this.state.curNode.data.length === 1) {
       parentid = "";
@@ -209,15 +267,12 @@ class App extends Component {
         }
       });
     }
-    console.log(this.state.curNode.id);
-    console.log(parentid);
-    console.log(this.state.registry);
+
     this.setState({
       displayBox: false,
       message: "Please wait...",
     });
-    // console.log(this.state.option);
-    // TODO: write the remaining logic here after the user selects a match
+
     fetch("/api/expandgraph", {
       method: "POST",
       headers: {
@@ -240,7 +295,6 @@ class App extends Component {
         return res.json();
       })
       .then((data) => {
-        console.log(data.adjList);
         this.setState({
           message:
             "Graph Generated. Click on the nodes to uncover more details.",
@@ -249,6 +303,7 @@ class App extends Component {
           data: new Map(JSON.parse(data.data)),
           reverseReg: new Map(JSON.parse(data.reverseReg)),
           processed: JSON.parse(data.processed),
+          treeStructure: JSON.parse(data.treeStructure),
         });
         const nodes = {
           nodes: [],
@@ -267,6 +322,9 @@ class App extends Component {
         });
         this.setState({
           nodes: nodes,
+        });
+        this.setState({
+          viewRight: false,
         });
       });
   };
@@ -359,156 +417,213 @@ class App extends Component {
         </div>
         <br></br>
         {!this.state.nodes ? null : (
-          <div style={{ height: "80vh", display: "flex", width: "100%" }}>
-            <div className="left-box">
-              <div className="index-box">
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "red" }}
-                  ></div>
-                  <div className="index-item-text">Root-Node</div>
-                </div>
-
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "yellow" }}
-                  ></div>
-                  <div className="index-item-text">Expandable Nodes</div>
-                </div>
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "black" }}
-                  ></div>
-                  <div className="index-item-text">
-                    Intermediate or Terminal Nodes
-                  </div>
-                </div>
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "blue" }}
-                  ></div>
-                  <div className="index-item-text">
-                    Function Declaration do not exist in repo.
-                  </div>
-                </div>
-              </div>
-              <Graph
-                data={this.state.nodes}
-                NodeComponent={this.Node}
-                LineComponent={Line}
-                nodeDistance={500}
-                zoomDepth={0}
-                hoverOpacity={0.3}
-                enableDrag={true}
-                pullIn={false}
-              />
-            </div>
-            <div
-              className="expander"
-              onClick={() => {
+          <div>
+            <Switch
+              checkedChildren="a"
+              unCheckedChildren="b"
+              defaultChecked
+              onChange={() => {
                 this.setState({
-                  viewRight: !this.state.viewRight,
+                  displayGraph: !this.state.displayGraph,
                 });
               }}
-            >
-              {this.state.viewRight ? (
-                <CaretRight size={15} weight="bold" />
-              ) : (
-                <CaretLeft size={15} weight="bold" />
-              )}
-            </div>
+            />
+            <div style={{ height: "80vh", display: "flex", width: "100%" }}>
+              {this.state.displayGraph ? (
+                <div
+                  className="left-box"
+                  style={{
+                    fontSize: "0.8em",
+                    fontWeight: "lighter",
+                    letterSpacing: "1px",
+                  }}
+                >
+                  <div className="index-box">
+                    <div className="index-item">
+                      <div
+                        className="index-item-icon"
+                        style={{ backgroundColor: "red" }}
+                      ></div>
+                      <div className="index-item-text">Root-Node</div>
+                    </div>
 
-            <div
-              className={`right-box ${
-                !this.state.viewRight && "right-box-closed"
-              }`}
-            >
-              <div style={{ fontSize: "1.2em", color: "white" }}>
-                <b>Please select the correct reference</b>
-              </div>
-              {this.state.displayBox ? (
-                <div>
-                  <div className="radio-buttons">
-                    <br></br>
-                    <Radio.Group
-                      onChange={this.onChange}
-                      value={this.state.radioValue}
-                    >
-                      {this.state.curNode
-                        ? this.state.curNode.data.map((e, ind) => {
-                            return (
-                              <div
-                                style={{
-                                  border:
-                                    this.state.radioValue === e
-                                      ? "2px solid white"
-                                      : "",
-                                  // add a glowing shadow
-                                  boxShadow:
-                                    this.state.radioValue === e
-                                      ? "0px 0px 10px white"
-                                      : "",
-                                }}
-                                className={`card card-${
-                                  Math.floor(ind % 5) + 1
-                                }`}
-                              >
-                                <Radio
-                                  value={e}
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => {
-                                    this.setState({
-                                      radioValue: e,
-                                    });
-                                  }}
-                                >
-                                  {" "}
-                                  <div className="file-name-cont">
-                                    <File
-                                      size={18}
-                                      className="card__icon"
-                                      weight="bold"
-                                    />{" "}
-                                    {/* trim the file to max of length 30 */}
-                                    {e.file.substring(0, 30)}
-                                  </div>
-                                  <div className="file-link-cont">
-                                    <span className="preview">
-                                      {e.preview}...
-                                    </span>
-                                    <a
-                                      className="code-prev"
-                                      href={e.url}
-                                      target="_blank"
-                                    >
-                                      <ArrowRight size={20} weight="bold" />
-                                    </a>
-                                  </div>
-                                </Radio>
-                              </div>
-                            );
-                          })
-                        : null}
-                    </Radio.Group>
-                    <br></br>
-                    {this.state.curNode && this.state.selectValid ? (
-                      <div style={{ textAlign: "center" }}>
-                        <button
-                          className="select-button"
-                          onClick={this.selectOption}
-                        >
-                          Select
-                        </button>
-                        <br></br>
+                    <div className="index-item">
+                      <div
+                        className="index-item-icon"
+                        style={{ backgroundColor: "yellow" }}
+                      ></div>
+                      <div className="index-item-text">Expandable Nodes</div>
+                    </div>
+                    <div className="index-item">
+                      <div
+                        className="index-item-icon"
+                        style={{ backgroundColor: "black" }}
+                      ></div>
+                      <div className="index-item-text">
+                        Intermediate or Terminal Nodes
                       </div>
-                    ) : null}
+                    </div>
+                    <div className="index-item">
+                      <div
+                        className="index-item-icon"
+                        style={{ backgroundColor: "blue" }}
+                      ></div>
+                      <div className="index-item-text">
+                        Function Declaration do not exist in repo.
+                      </div>
+                    </div>
                   </div>
+                  <Graph
+                    data={this.state.nodes}
+                    NodeComponent={this.Node}
+                    LineComponent={Line}
+                    nodeDistance={500}
+                    zoomDepth={2}
+                    hoverOpacity={0.3}
+                    enableDrag={true}
+                    pullIn={false}
+                  />
                 </div>
-              ) : null}
+              ) : (
+                <div
+                  className="left-box"
+                  style={{
+                    fontSize: "0.8em",
+                    fontWeight: "lighter",
+                    letterSpacing: "3px",
+                  }}
+                >
+                  <Tree
+                    data={this.state.treeStructure}
+                    orientation="vertical"
+                    circleRadius="10"
+                    onClick={this.changeNode}
+                    collapsible={false}
+                    separation={{
+                      siblings: 1,
+                      nonSiblings: 1,
+                    }}
+                    translate={{
+                      x: 500,
+                      y: 100,
+                    }}
+                  />
+                </div>
+              )}
+
+              <div
+                className="expander"
+                onClick={() => {
+                  this.setState({
+                    viewRight: !this.state.viewRight,
+                  });
+                }}
+              >
+                {this.state.viewRight ? (
+                  <CaretRight size={15} weight="bold" />
+                ) : (
+                  <CaretLeft size={15} weight="bold" />
+                )}
+              </div>
+
+              <div
+                className={`right-box ${
+                  !this.state.viewRight && "right-box-closed"
+                }`}
+              >
+                <div style={{ fontSize: "1.2em", color: "white" }}>
+                  <b>Please select the correct reference</b>
+                </div>
+                {this.state.displayBox ? (
+                  <div>
+                    <p style={{ color: "white" }}>
+                      <i>
+                        {this.state.reverseReg.get(this.state.curNode.id)
+                          .funcName +
+                          "(" +
+                          this.state.reverseReg.get(this.state.curNode.id)
+                            .paramCount +
+                          ")"}
+                      </i>
+                    </p>
+                    <div className="radio-buttons">
+                      <br></br>
+                      <Radio.Group
+                        onChange={this.onChange}
+                        value={this.state.radioValue}
+                      >
+                        {this.state.curNode
+                          ? this.state.curNode.data.map((e, ind) => {
+                              return (
+                                <div
+                                  style={{
+                                    border:
+                                      this.state.radioValue === e
+                                        ? "2px solid white"
+                                        : "",
+                                    // add a glowing shadow
+                                    boxShadow:
+                                      this.state.radioValue === e
+                                        ? "0px 0px 10px white"
+                                        : "",
+                                  }}
+                                  className={`card card-${
+                                    Math.floor(ind % 5) + 1
+                                  }`}
+                                >
+                                  <Radio
+                                    value={e}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                      this.setState({
+                                        radioValue: e,
+                                      });
+                                    }}
+                                  >
+                                    {" "}
+                                    <div className="file-name-cont">
+                                      <File
+                                        size={18}
+                                        className="card__icon"
+                                        weight="bold"
+                                      />{" "}
+                                      {/* trim the file to max of length 30 */}
+                                      {e.file.substring(0, 30)}
+                                    </div>
+                                    <div className="file-link-cont">
+                                      <span className="preview">
+                                        {e.preview}...
+                                      </span>
+                                      <a
+                                        className="code-prev"
+                                        href={e.url}
+                                        target="_blank"
+                                      >
+                                        <ArrowRight size={20} weight="bold" />
+                                      </a>
+                                    </div>
+                                  </Radio>
+                                </div>
+                              );
+                            })
+                          : null}
+                      </Radio.Group>
+                      <br></br>
+                      {this.state.curNode && this.state.selectValid ? (
+                        <div style={{ textAlign: "center" }}>
+                          <button
+                            className="select-button"
+                            onClick={this.selectOption}
+                          >
+                            Select
+                          </button>
+                          <br></br>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
         )}
@@ -520,3 +635,27 @@ class App extends Component {
 }
 
 export default App;
+
+{
+  /* <div
+              className="left-box"
+              style={{
+                fontSize: "0.8em",
+                fontWeight: "lighter",
+                letterSpacing: "3px",
+              }}
+            >
+              <Tree
+                data={this.state.treeStructure}
+                orientation="vertical"
+                circleRadius="10"
+                style={styling}
+                onClick={this.changeNode}
+                collapsible={false}
+                separation={{
+                  siblings: 1,
+                  nonSiblings: 1,
+                }}
+              />
+            </div> */
+}

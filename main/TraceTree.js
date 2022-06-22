@@ -37,19 +37,32 @@ class TraceTree {
   }
 
   generateTreeStructure(node, visited) {
-    const res = { name: node };
+    const res = {
+      name:
+        this.reverseReg.get(node).funcName +
+        "(" +
+        this.reverseReg.get(node).paramCount +
+        ")",
+      _id: node,
+    };
     if (visited.includes(node)) {
       res["attributes"] = {
-        recursion: true,
+        Branch: "repeat",
       };
       return res;
     }
     if (this.adjList?.get(node).length !== 0) {
       visited.push(node);
       res["children"] = this.adjList?.get(node).map((value) => {
-        this.generateTreeStructure(value, visited);
+        return this.generateTreeStructure(value, visited);
       });
       visited.pop();
+    } else {
+      if (this.data.get(node).length === 0) {
+        res["attributes"] = {
+          Definition: "none",
+        };
+      }
     }
     return res;
   }
@@ -58,7 +71,9 @@ class TraceTree {
     const funcCalled = getFunctionCalled(dataObj[0]);
     this.processed.push(id);
 
-    const getBodyResults = await Promise.all(funcCalled.map(func => getBody(func.funcName, func.paramCount))); 
+    const getBodyResults = await Promise.all(
+      funcCalled.map((func) => getBody(func.funcName, func.paramCount))
+    );
     for (let index in funcCalled) {
       await this.generateTree(
         funcCalled[index].funcName,
