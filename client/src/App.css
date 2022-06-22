@@ -60,8 +60,8 @@ input:focus {
   /* background-color: #5399fa5a; */
   background: linear-gradient(
     60deg,
-    hsla(191, 75%, 60%, 0.704) 0%,
-    rgba(33, 12, 172, 0.702) 100%
+    hsl(191, 52%, 17%) 0%,
+    rgb(22, 15, 74) 100%
   );
   /* background: rgba(54, 51, 72, 0.641); */
   border: 1px solid grey;
@@ -209,7 +209,7 @@ code-preview {
 .card__icon {
   position: relative;
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
 }
 
 .card__link::after {
@@ -238,7 +238,7 @@ code-preview {
 
 .card__title {
   font-weight: 400;
-  color: #ffffff;
+  color: black;
 }
 
 .card__apply {
@@ -271,7 +271,7 @@ code-preview {
   align-items: center;
   justify-content: flex-start;
   gap: 3px;
-  color: white;
+  color: black;
 }
 
 .preview {
