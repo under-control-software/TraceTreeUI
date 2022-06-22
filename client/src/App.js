@@ -33,41 +33,41 @@ const styling = {
   },
 };
 
-const orgChart = {
-  name: "CEO",
-  children: [
-    {
-      name: "Manager",
-      attributes: {
-        department: "Production",
-      },
-      children: [
-        {
-          name: "Foreman",
-          attributes: {
-            department: "Fabrication",
-          },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
-        },
-        {
-          name: "Foreman",
-          attributes: {
-            department: "Assembly",
-          },
-          children: [
-            {
-              name: "Worker",
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+// const orgChart = {
+//   name: "CEO",
+//   children: [
+//     {
+//       name: "Manager",
+//       attributes: {
+//         department: "Production",
+//       },
+//       children: [
+//         {
+//           name: "Foreman",
+//           attributes: {
+//             department: "Fabrication",
+//           },
+//           children: [
+//             {
+//               name: "Worker",
+//             },
+//           ],
+//         },
+//         {
+//           name: "Foreman",
+//           attributes: {
+//             department: "Assembly",
+//           },
+//           children: [
+//             {
+//               name: "Worker",
+//             },
+//           ],
+//         },
+//       ],
+//     },
+//   ],
+// };
 
 // getAccessControlAllowCredentials
 
@@ -96,45 +96,77 @@ class App extends Component {
 
     this.run = this.run.bind(this);
     // this.Node = this.Node.bind(this);
-    // this.display = this.display.bind(this);
+    this.display = this.display.bind(this);
+    this.displayTreeNode = this.displayTreeNode.bind(this);
     this.onChange = this.onChange.bind(this);
     this.changeNode = this.changeNode.bind(this);
   }
 
   changeNode = (e) => {
     console.log(e);
-    // if (e.data.length === 1) {
-    //   this.setState({
-    //     option: node.data[0],
-    //   });
-    // } else {
-    //   this.setState({
-    //     option: null,
-    //   });
-    // }
-    // this.setState({
-    //   displayBox: true,
-    // });
-    // if (node.data) {
-    //   hoverBox();
-    // } else {
-    //   this.display(null);
-    // }
-    this.setState({
-      viewRight: true,
-    });
+    const data = this.state.data.get(e._id);
+    console.log(data);
+    if (
+      (e.attributes && e.attributes.Branch) ||
+      (e.attributes && e.attributes.Definition)
+    ) {
+      this.setState({
+        option: null,
+      });
+      this.setState({
+        displayBox: false,
+      });
+      this.setState({
+        viewRight: false,
+      });
+    } else {
+      if (data.length === 1) {
+        this.setState({
+          option: data[0],
+        });
+      } else {
+        this.setState({
+          option: null,
+        });
+      }
+      this.setState({
+        displayBox: true,
+      });
+      if (data) {
+        this.displayTreeNode(e);
+      } else {
+        this.display(null);
+      }
+      this.setState({
+        viewRight: true,
+      });
+    }
   };
 
-  // display = (node) => {
-  //   this.setState({
-  //     curNode: node,
-  //     selectValid:
-  //       node.data.length === 0 || this.state.processed.includes(node.id)
-  //         ? false
-  //         : true,
-  //     radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
-  //   });
-  // };
+  displayTreeNode = (e) => {
+    const node = {
+      id: e._id,
+      data: this.state.data.get(e._id),
+    };
+    this.display(node);
+  };
+
+  display = (node) => {
+    if (!node) {
+      this.setState({
+        curNode: null,
+      });
+      return;
+    }
+    this.setState({
+      curNode: node,
+      selectValid:
+        node.data.length === 0 || this.state.processed.includes(node.id)
+          ? false
+          : true,
+      radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
+    });
+  };
 
   // Node = ({ node }) => {
   //   // console.log(node);
@@ -431,6 +463,10 @@ class App extends Component {
                 style={styling}
                 onClick={this.changeNode}
                 collapsible={false}
+                separation={{
+                  siblings: 0.8,
+                  nonSiblings: 1,
+                }}
               />
             </div>
             <div
