@@ -54,8 +54,26 @@ class TraceTree {
     return res;
   }
 
+  async exploreFurther(id, dataObj, depth) {
+    const funcCalled = getFunctionCalled(dataObj[0]);
+    this.processed.push(id);
+
+    const getBodyResults = await Promise.all(funcCalled.map(func => getBody(func.funcName, func.paramCount))); 
+    for (let index in funcCalled) {
+      await this.generateTree(
+        funcCalled[index].funcName,
+        funcCalled[index].paramCount,
+        getBodyResults[index],
+        id,
+        false,
+        depth + 1
+      );
+    }
+  }
+
   async run(funcName, paramCount) {
-    await this.generateTree(funcName, paramCount, "", true);
+    const results = await getBody(funcName, paramCount);
+    await this.generateTree(funcName, paramCount, results, "", true);
     return this.returnData();
   }
 
@@ -112,18 +130,14 @@ class TraceTree {
     this.reverseReg?.set(id, regobj);
     this.data?.set(id, [funcObj]);
 
-    const funcCalled = getFunctionCalled(funcObj);
-    this.processed.push(id);
-    for (var func of funcCalled) {
-      await this.generateTree(func.funcName, func.paramCount, id, false, 1);
-    }
-
+    await this.exploreFurther(id, [funcObj], 0);
     return this.returnData();
   }
 
   async generateTree(
     funcName,
     paramCount,
+    results,
     parent = "",
     start = false,
     depth = 0
@@ -132,13 +146,10 @@ class TraceTree {
       return;
     }
 
-    let results = await getBody(funcName, paramCount);
-
     const id = nanoid();
     if (start) {
       this.start = id;
     }
-    // parent && this.adjList?.get(parent).push(id);
 
     if (!results || results.length === 0) {
       // no match case
@@ -217,17 +228,8 @@ class TraceTree {
     if (depth >= 2) {
       return;
     }
-    const funcCalled = getFunctionCalled(dataObj[0]);
-    this.processed.push(id);
-    for (var func of funcCalled) {
-      await this.generateTree(
-        func.funcName,
-        func.paramCount,
-        id,
-        false,
-        depth + 1
-      );
-    }
+
+    await this.exploreFurther(id, dataObj, depth);
   }
 
   printTree() {
