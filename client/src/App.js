@@ -2,6 +2,7 @@ import React, { Component, useState } from "react";
 import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
+import Tree from "react-d3-tree";
 import {
   MagnifyingGlass,
   TreeStructure,
@@ -9,12 +10,62 @@ import {
   ArrowRight,
   CaretRight,
   CaretLeft,
-  Tree,
   TreeEvergreen,
 } from "phosphor-react";
 
-const Line = ({ link, ...restProps }) => {
-  return <line {...restProps} stroke="grey" />;
+// const Line = ({ link, ...restProps }) => {
+//   return <line {...restProps} stroke="grey" />;
+// };
+
+const styling = {
+  links: {
+    stroke: "blue",
+    strokeWidth: 3,
+  },
+  nodes: {
+    node: {
+      circle: {
+        stroke: "blue",
+        strokeWidth: 3,
+      },
+    },
+  },
+};
+
+const orgChart = {
+  name: "CEO",
+  children: [
+    {
+      name: "Manager",
+      attributes: {
+        department: "Production",
+      },
+      children: [
+        {
+          name: "Foreman",
+          attributes: {
+            department: "Fabrication",
+          },
+          children: [
+            {
+              name: "Worker",
+            },
+          ],
+        },
+        {
+          name: "Foreman",
+          attributes: {
+            department: "Assembly",
+          },
+          children: [
+            {
+              name: "Worker",
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 // getAccessControlAllowCredentials
@@ -42,94 +93,96 @@ class App extends Component {
     };
 
     this.run = this.run.bind(this);
-    this.Node = this.Node.bind(this);
-    this.display = this.display.bind(this);
+    // this.Node = this.Node.bind(this);
+    // this.display = this.display.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.changeNode = this.changeNode.bind(this);
   }
 
-  display = (node) => {
-    this.setState({
-      curNode: node,
-      selectValid:
-        node.data.length === 0 || this.state.processed.includes(node.id)
-          ? false
-          : true,
-      radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
-    });
+  changeNode = (e) => {
+    console.log(e);
   };
 
-  Node = ({ node }) => {
-    // console.log(node);
-    const fontSize = 14;
-    const radius = 10;
-    let color = node.start ? "red" : "black";
-    if (!this.state.processed.includes(node.id)) {
-      color = "yellow";
-    }
-    if (!node.data || node.data.length === 0) {
-      color = "blue";
-    }
+  // display = (node) => {
+  //   this.setState({
+  //     curNode: node,
+  //     selectValid:
+  //       node.data.length === 0 || this.state.processed.includes(node.id)
+  //         ? false
+  //         : true,
+  //     radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
+  //   });
+  // };
 
-    const sizes = {
-      radius: radius,
-      textSize: fontSize,
-      textX: radius * 1.5,
-      textY: radius / 2,
-    };
+  // Node = ({ node }) => {
+  //   // console.log(node);
+  //   const fontSize = 14;
+  //   const radius = 10;
+  //   let color = node.start ? "red" : "black";
+  //   if (!this.state.processed.includes(node.id)) {
+  //     color = "yellow";
+  //   }
+  //   if (!node.data || node.data.length === 0) {
+  //     color = "blue";
+  //   }
 
-    const hoverBox = () => {
-      this.display(node);
-    };
+  //   const sizes = {
+  //     radius: radius,
+  //     textSize: fontSize,
+  //     textX: radius * 1.5,
+  //     textY: radius / 2,
+  //   };
 
-    return (
-      <a
-        style={{ cursor: "pointer" }}
-        id="node"
-        onClick={() => {
-          if (node.data.length === 1) {
-            this.setState({
-              option: node.data[0],
-            });
-          } else {
-            this.setState({
-              option: null,
-            });
-          }
-          this.setState({
-            displayBox: true,
-          });
-          if (node.data) {
-            hoverBox();
-          } else {
-            this.display(null);
-          }
-          this.setState({
-            viewRight: true,
-          });
-        }}
-      >
-        <circle fill={`${color}`} stroke="black" r={sizes.radius} />
-        <g style={{ fontSize: sizes.textSize + "px" }}>
-          <text x={sizes.radius + 7} y={sizes.radius / 2}>
-            {node.name.funcName + "(" + node.name.paramCount + " arg(s))"}
-          </text>
-        </g>
-      </a>
-    );
-  };
+  //   const hoverBox = () => {
+  //     this.display(node);
+  //   };
+
+  //   return (
+  //     <a
+  //       style={{ cursor: "pointer" }}
+  //       id="node"
+  //       onClick={() => {
+  //         if (node.data.length === 1) {
+  //           this.setState({
+  //             option: node.data[0],
+  //           });
+  //         } else {
+  //           this.setState({
+  //             option: null,
+  //           });
+  //         }
+  //         this.setState({
+  //           displayBox: true,
+  //         });
+  //         if (node.data) {
+  //           hoverBox();
+  //         } else {
+  //           this.display(null);
+  //         }
+  //         this.setState({
+  //           viewRight: true,
+  //         });
+  //       }}
+  //     >
+  //       <circle fill={`${color}`} stroke="black" r={sizes.radius} />
+  //       <g style={{ fontSize: sizes.textSize + "px" }}>
+  //         <text x={sizes.radius + 7} y={sizes.radius / 2}>
+  //           {node.name.funcName + "(" + node.name.paramCount + " arg(s))"}
+  //         </text>
+  //       </g>
+  //     </a>
+  //   );
+  // };
+
   scrollToMyRef = () =>
     window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" });
+
   run() {
     var funcName = document.getElementById("func-name").value;
-    // console.log(funcName);
     // funcName = "getAccessControlAllowCredentials";
-    // funcName = "purgeUnreferencedEntries";
-    // console.log(funcName);
+    funcName = "purgeUnreferencedEntries";
     var numArgs = parseInt(document.getElementById("num-args").value);
-    // console.log(numArgs);
-    // console.log(typeof(numArgs));
-    // numArgs = 0;
-    // console.log(typeof(numArgs));
+    numArgs = 0;
     if (funcName === "" || !funcName) {
       alert("Please enter a function name");
       return;
@@ -148,7 +201,6 @@ class App extends Component {
       body: JSON.stringify({ name: funcName, paramCount: numArgs }),
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
       .then((data) => {
@@ -161,24 +213,29 @@ class App extends Component {
           reverseReg: new Map(JSON.parse(data.reverseReg)),
           processed: JSON.parse(data.processed),
           start: data.start,
+          treeStructure: JSON.parse(data.treeStructure),
         });
-        const nodes = {
-          nodes: [],
-          links: [],
-        };
-        this.state.adjList.forEach((value, key) => {
-          nodes.nodes.push({
-            id: key,
-            name: this.state.reverseReg.get(key),
-            data: this.state.data.get(key),
-            start: this.state.start === key,
-          });
-          value.map((e) => {
-            nodes.links.push({ source: key, target: e });
-          });
-        });
+        // const nodes = {
+        //   nodes: [],
+        //   links: [],
+        // };
+        // this.state.adjList.forEach((value, key) => {
+        //   nodes.nodes.push({
+        //     id: key,
+        //     name: this.state.reverseReg.get(key),
+        //     data: this.state.data.get(key),
+        //     start: this.state.start === key,
+        //   });
+        //   value.map((e) => {
+        //     nodes.links.push({ source: key, target: e });
+        //   });
+        // });
+        // this.setState({
+        //   nodes: nodes,
+        // });
+        console.log(JSON.stringify(this.state.treeStructure));
         this.setState({
-          nodes: nodes,
+          nodes: 1,
         });
         this.scrollToMyRef();
       });
@@ -196,7 +253,7 @@ class App extends Component {
       alert("Please select an option");
       return;
     }
-    console.log("global option", this.state.curNode);
+
     let parentid;
     if (this.state.curNode.data.length === 1) {
       parentid = "";
@@ -207,15 +264,12 @@ class App extends Component {
         }
       });
     }
-    console.log(this.state.curNode.id);
-    console.log(parentid);
-    console.log(this.state.registry);
+
     this.setState({
       displayBox: false,
       message: "Please wait...",
     });
-    // console.log(this.state.option);
-    // TODO: write the remaining logic here after the user selects a match
+
     fetch("/api/expandgraph", {
       method: "POST",
       headers: {
@@ -247,24 +301,28 @@ class App extends Component {
           data: new Map(JSON.parse(data.data)),
           reverseReg: new Map(JSON.parse(data.reverseReg)),
           processed: JSON.parse(data.processed),
+          treeStructure: JSON.parse(data.treeStructure),
         });
-        const nodes = {
-          nodes: [],
-          links: [],
-        };
-        this.state.adjList.forEach((value, key) => {
-          nodes.nodes.push({
-            id: key,
-            name: this.state.reverseReg.get(key),
-            data: this.state.data.get(key),
-            start: this.state.start === key,
-          });
-          value.map((e) => {
-            nodes.links.push({ source: key, target: e });
-          });
-        });
+        // const nodes = {
+        //   nodes: [],
+        //   links: [],
+        // };
+        // this.state.adjList.forEach((value, key) => {
+        //   nodes.nodes.push({
+        //     id: key,
+        //     name: this.state.reverseReg.get(key),
+        //     data: this.state.data.get(key),
+        //     start: this.state.start === key,
+        //   });
+        //   value.map((e) => {
+        //     nodes.links.push({ source: key, target: e });
+        //   });
+        // });
+        // this.setState({
+        //   nodes: nodes,
+        // });
         this.setState({
-          nodes: nodes,
+          nodes: 1,
         });
       });
   };
@@ -330,53 +388,15 @@ class App extends Component {
           {this.state.message}
         </div>
         <br></br>
-        {!this.state.nodes ? null : (
+        {this.state.nodes ? null : (
           <div style={{ height: "80vh", display: "flex", width: "100%" }}>
             <div className="left-box">
-              <div className="index-box">
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "red" }}
-                  ></div>
-                  <div className="index-item-text">Root-Node</div>
-                </div>
-
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "yellow" }}
-                  ></div>
-                  <div className="index-item-text">Expandable Nodes</div>
-                </div>
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "black" }}
-                  ></div>
-                  <div className="index-item-text">
-                    Intermediate or Terminal Nodes
-                  </div>
-                </div>
-                <div className="index-item">
-                  <div
-                    className="index-item-icon"
-                    style={{ backgroundColor: "blue" }}
-                  ></div>
-                  <div className="index-item-text">
-                    Function Declaration do not exist in repo.
-                  </div>
-                </div>
-              </div>
-              <Graph
-                data={this.state.nodes}
-                NodeComponent={this.Node}
-                LineComponent={Line}
-                nodeDistance={500}
-                zoomDepth={0}
-                hoverOpacity={0.3}
-                enableDrag={true}
-                pullIn={false}
+              <Tree
+                data={orgChart}
+                orientation="vertical"
+                circleRadius="10"
+                style={styling}
+                onClick={this.changeNode}
               />
             </div>
             <div

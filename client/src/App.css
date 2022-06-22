@@ -352,3 +352,15 @@ code-preview {
 .nav-run-button {
   padding: 0.24rem 0.5rem;
 }
+
+.node__root > circle {
+  fill: red;
+}
+
+.node__branch > circle {
+  fill: yellow;
+}
+
+.node__leaf > circle {
+  fill: green;
+}
