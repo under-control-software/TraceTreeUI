@@ -2,6 +2,7 @@
   text-align: center;
   font-family: "Montserrat", sans-serif;
   color: rgb(41, 41, 50);
+  background-color: white;
 }
 
 /* .App-header {
@@ -9,7 +10,11 @@
   height: 60px;
   color: white;
 } */
-
+textarea:focus,
+input:focus {
+  outline: none;
+  border: 2px solid white;
+}
 .App-title {
   padding: 10px;
   padding-bottom: 0;
@@ -33,12 +38,12 @@
 .left-box {
   flex: 2;
   margin: 10px;
-  border: 1px solid grey;
-  background: linear-gradient(
+  /* border: 1px solid grey; */
+  /* background: linear-gradient(
     90deg,
     hsla(191, 75%, 60%, 0.27) 0%,
     rgba(33, 12, 172, 0.229) 100%
-  );
+  ); */
   border-radius: 5px;
   /* make scrollable in both directions*/
   /* overflow-y: scroll;
@@ -121,7 +126,9 @@ button:hover {
 .search-cont {
 }
 .search-cont {
-  padding: 3rem 0;
+  padding: 0;
+  padding-bottom: 2rem;
+  padding-top: 5rem;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -357,17 +364,35 @@ code-preview {
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
   box-shadow: none;
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .nav-num-bar {
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
   box-shadow: none;
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .nav-run-button {
   padding: 0.24rem 0.5rem;
   box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: #2246ce;
+}
+.nav-run-button:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+/* chnage the color of placeholder text */
+.nav-name-search-bar::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+.nav-num-bar::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .sub-title {

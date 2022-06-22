@@ -24,6 +24,7 @@ class TraceTree {
 
   returnData() {
     const treeStructure = this.generateTreeStructure(this.start, []);
+    console.log(this.adjList);
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
@@ -60,10 +61,6 @@ class TraceTree {
       if (this.data.get(node).length === 0) {
         res["attributes"] = {
           Definition: "none",
-        };
-      } else {
-        res["attributes"] = {
-          Click: "expand",
         };
       }
     }
