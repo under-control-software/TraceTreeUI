@@ -38,7 +38,7 @@ input:focus {
 }
 .left-box {
   flex: 2;
-  margin: 10px;
+
   /* border: 1px solid grey; */
   /* background: linear-gradient(
     90deg,
@@ -53,17 +53,17 @@ input:focus {
 }
 
 .right-box {
-  flex: 0.6;
+  flex: 0.8;
   min-width: 20rem;
   overflow: auto;
 
   /* background-color: #5399fa5a; */
-  /* background: linear-gradient(
+  background: linear-gradient(
     60deg,
-    hsl(191, 75%, 60%) 0%,
-    hsla(248, 87%, 36%, 1) 100%
-  ); */
-  background: rgb(28, 22, 62);
+    hsla(191, 75%, 60%, 0.704) 0%,
+    rgba(33, 12, 172, 0.702) 100%
+  );
+  /* background: rgba(54, 51, 72, 0.641); */
   border: 1px solid grey;
   padding: 20px 8px;
   border-radius: 10px;
