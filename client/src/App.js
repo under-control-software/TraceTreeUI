@@ -3,6 +3,7 @@ import "./App.css";
 import { Radio } from "antd";
 import Graph from "react-graph-network";
 import footer from "./assets/footer.png";
+import LoadingSpin from "react-loading-spin";
 import {
   MagnifyingGlass,
   TreeStructure,
@@ -293,43 +294,58 @@ class App extends Component {
               </div>
             )}
           </div>
-
-          <div
-            className={`search-cont ${this.state.nodes && "nav-search-cont"}`}
-          >
-            {/* <label>
+          <div>
+            <div
+              className={`search-cont ${this.state.nodes && "nav-search-cont"}`}
+            >
+              {/* <label>
                 Function name: <span style={{ color: "white" }}>..</span>
               </label> */}
 
-            <input
-              type="text"
-              size={31}
-              id="func-name"
-              className={`name-search-bar ${
-                this.state.nodes && "nav-name-search-bar"
-              }`}
-              placeholder="Search Function by Name"
-            />
+              <input
+                type="text"
+                size={31}
+                id="func-name"
+                className={`name-search-bar ${
+                  this.state.nodes && "nav-name-search-bar"
+                }`}
+                placeholder="Function Name"
+              />
 
-            {/* <label>
+              {/* <label>
               Number of arguments: <span style={{ color: "white" }}>..</span>
             </label> */}
-            <input
-              type="number"
-              size={8}
-              id="num-args"
-              className={`search-bar num-bar ${
-                this.state.nodes && "nav-num-bar"
-              }`}
-              placeholder="Number of Arguments"
-            />
-            <button
-              className={`run-button ${this.state.nodes && "nav-run-button"}`}
-              onClick={this.run}
+              <input
+                type="number"
+                size={8}
+                id="num-args"
+                className={`search-bar num-bar ${
+                  this.state.nodes && "nav-num-bar"
+                }`}
+                placeholder="Num Args"
+              />
+              <button
+                className={`run-button ${this.state.nodes && "nav-run-button"}`}
+                onClick={this.run}
+              >
+                <TreeStructure size={25} weight="bold" />
+              </button>
+            </div>
+            <div
+              style={{
+                opacity: this.state.message === "Please wait..." ? 1 : 0.00001,
+              }}
             >
-              <TreeStructure size={25} weight="bold" />
-            </button>
+              {" "}
+              {!this.state.nodes && (
+                <LoadingSpin
+                  primaryColor={"#408efd"}
+                  secondaryColor={"hsl(191, 75%, 60%)"}
+                />
+              )}
+            </div>
           </div>
+
           {!this.state.nodes && (
             <div className="footer-image-cont">
               <img src={footer} alt="footer" className="footer-image" />

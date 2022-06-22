@@ -29,6 +29,7 @@ async function getBody(funcName, paramCount) {
   res = res.filter((match) => {
     return paramCheck(match.lineMatches[0].preview, paramCount, funcName);
   });
+  console.log(res, query);
   return res;
 }
 
@@ -72,16 +73,16 @@ function getFunctionCalled(funcBody) {
   if (!funcBody) {
     return [];
   }
-  
+
   // referencing funcBody itself (not a copy)
   const value = funcBody.code;
   value.shift();
-  calledFunctions = value.map(line => {
+  calledFunctions = value.map((line) => {
     const codeLine = line.trim();
     return parseLine(codeLine);
   });
   const result = [].concat(...calledFunctions);
-  return [... new Set(result)];
+  return [...new Set(result)];
 }
 
 function parseLine(codeLine) {
