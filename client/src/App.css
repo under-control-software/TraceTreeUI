@@ -60,8 +60,8 @@ input:focus {
   /* background-color: #5399fa5a; */
   background: linear-gradient(
     60deg,
-    hsla(190, 52%, 17%, 0.704) 0%,
-    rgba(22, 15, 74, 0.702) 100%
+    hsl(191, 52%, 17%) 0%,
+    rgb(22, 15, 74) 100%
   );
   /* background: rgba(54, 51, 72, 0.641); */
   border: 1px solid grey;
