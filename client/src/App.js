@@ -148,6 +148,7 @@ class App extends Component {
       body: JSON.stringify({ name: funcName, paramCount: numArgs }),
     })
       .then((res) => {
+        console.log(res);
         return res.json();
       })
       .then((data) => {
@@ -229,6 +230,7 @@ class App extends Component {
         reverseReg: JSON.stringify(Array.from(this.state.reverseReg.entries())),
         processed: JSON.stringify(this.state.processed),
         paramCount: this.state.reverseReg.get(this.state.curNode.id).paramCount,
+        start: this.state.start,
         parent: parentid,
       }),
     })
