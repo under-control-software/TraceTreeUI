@@ -93,6 +93,12 @@ class App extends Component {
       this.setState({
         viewRight: true,
       });
+      const int = setInterval(() => {
+        if (data.length === 1 && !this.state.processed.includes(e._id)) {
+          this.selectOption();
+          clearInterval(int);
+        }
+      }, 300);
     }
   };
 
@@ -140,12 +146,6 @@ class App extends Component {
       textY: radius / 2,
     };
 
-    const hoverBox = () => {
-      this.display(node);
-    };
-
-    console.log(document.getElementById("select-button"));
-
     return (
       <a
         style={{ cursor: "pointer" }}
@@ -155,7 +155,6 @@ class App extends Component {
             this.setState({
               option: node.data[0],
             });
-            // document.getElementsByClassName("select-button")[0].click();
           } else {
             this.setState({
               option: null,
@@ -165,13 +164,22 @@ class App extends Component {
             displayBox: true,
           });
           if (node.data) {
-            hoverBox();
+            this.display(node);
           } else {
             this.display(null);
           }
           this.setState({
             viewRight: true,
           });
+          const int = setInterval(() => {
+            if (
+              node.data.length === 1 &&
+              !this.state.processed.includes(node.id)
+            ) {
+              this.selectOption();
+              clearInterval(int);
+            }
+          }, 300);
         }}
       >
         <circle fill={`${color}`} stroke="black" r={sizes.radius} />
@@ -258,8 +266,8 @@ class App extends Component {
     });
   };
 
-  selectOption = () => {
-    if (!this.state.option) {
+  selectOption = (opt = null) => {
+    if (!this.state.option && !opt) {
       alert("Please select an option");
       return;
     }
@@ -653,7 +661,6 @@ class App extends Component {
                         <div style={{ textAlign: "center" }}>
                           <button
                             className="select-button"
-                            id="select-button"
                             onClick={this.selectOption}
                           >
                             Select
@@ -676,27 +683,3 @@ class App extends Component {
 }
 
 export default App;
-
-{
-  /* <div
-              className="left-box"
-              style={{
-                fontSize: "0.8em",
-                fontWeight: "lighter",
-                letterSpacing: "3px",
-              }}
-            >
-              <Tree
-                data={this.state.treeStructure}
-                orientation="vertical"
-                circleRadius="10"
-                style={styling}
-                onClick={this.changeNode}
-                collapsible={false}
-                separation={{
-                  siblings: 1,
-                  nonSiblings: 1,
-                }}
-              />
-            </div> */
-}
