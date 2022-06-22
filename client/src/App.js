@@ -533,27 +533,36 @@ class App extends Component {
                 <div
                   className="left-box"
                   style={{
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "Montserrat, sans-serif",
                     fontSize: "14px",
                     fontWeight: "100",
                     letterSpacing: "1px",
                   }}
                 >
-                  <Tree
-                    data={this.state.treeStructure}
-                    orientation="vertical"
-                    circleRadius="10"
-                    onClick={this.changeNode}
-                    collapsible={false}
-                    separation={{
-                      siblings: 1,
-                      nonSiblings: 1,
-                    }}
-                    translate={{
-                      x: 500,
-                      y: 100,
-                    }}
-                  />
+                  {this.state.message === "Please wait..." ? (
+                    <div className="spinner-left">
+                      <LoadingSpin
+                        primaryColor={"#408efd"}
+                        secondaryColor={"hsl(191, 75%, 60%)"}
+                      />
+                    </div>
+                  ) : (
+                    <Tree
+                      data={this.state.treeStructure}
+                      orientation="vertical"
+                      circleRadius="10"
+                      onClick={this.changeNode}
+                      collapsible={false}
+                      separation={{
+                        siblings: 1,
+                        nonSiblings: 1,
+                      }}
+                      translate={{
+                        x: 500,
+                        y: 100,
+                      }}
+                    />
+                  )}
                 </div>
               )}
 
