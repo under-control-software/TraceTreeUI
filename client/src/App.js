@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import "./App.css";
 import { Radio, Switch } from "antd";
 import Graph from "react-graph-network";
@@ -15,6 +15,7 @@ import {
   TreeEvergreen,
   Graph as GraphIcon,
   Tree as TreeIcon,
+  X,
 } from "phosphor-react";
 
 const Line = ({ link, ...restProps }) => {
@@ -43,6 +44,7 @@ class App extends Component {
       viewRight: false,
       treeStructure: null,
       displayGraph: false,
+      messageShowing: true,
     };
 
     this.run = this.run.bind(this);
@@ -412,11 +414,22 @@ class App extends Component {
             </div>
           )}
         </div>
-        <br></br>
-        <div style={{ textAlign: "center", fontSize: "1.2em" }}>
-          {this.state.message}
-        </div>
-        <br></br>
+
+        {this.state.nodes && this.state.messageShowing && (
+          <div className={"message-banner"}>
+            <div className="message-text">{this.state.message}</div>
+            <div
+              className="cross-button"
+              onClick={() => {
+                this.setState({
+                  messageShowing: false,
+                });
+              }}
+            >
+              <X size={20} weight="duotone" />
+            </div>
+          </div>
+        )}
 
         {!this.state.nodes ? null : (
           <div>
@@ -444,7 +457,14 @@ class App extends Component {
               </div>
             </div>
 
-            <div style={{ height: "80vh", display: "flex", width: "100%" }}>
+            <div
+              style={{
+                height: "80vh",
+                display: "flex",
+                width: "100%",
+                gap: "0",
+              }}
+            >
               {this.state.displayGraph ? (
                 <div
                   className="left-box"
@@ -504,9 +524,10 @@ class App extends Component {
                 <div
                   className="left-box"
                   style={{
-                    fontSize: "0.8em",
-                    fontWeight: "lighter",
-                    letterSpacing: "3px",
+                    fontFamily: "Montserrat, sans-serif",
+                    fontSize: "14px",
+                    fontWeight: "100",
+                    letterSpacing: "1px",
                   }}
                 >
                   <Tree
