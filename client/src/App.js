@@ -282,7 +282,7 @@ class App extends Component {
                   this.state.nodes && "nav-header-icon"
                 }`}
               >
-                <TreeEvergreen size={50} weight="duotone" />
+                <TreeEvergreen size={55} weight="duotone" />
               </span>
               ree
             </div>
