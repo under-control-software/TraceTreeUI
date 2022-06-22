@@ -18,7 +18,7 @@ class TraceTree {
       this.data = new Map(JSON.parse(obj["data"]));
       this.reverseReg = new Map(JSON.parse(obj["reverseReg"]));
       this.processed = JSON.parse(obj["processed"]);
-      this.start = obj['start'];
+      this.start = obj["start"];
     }
   }
 
@@ -31,22 +31,22 @@ class TraceTree {
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
       processed: JSON.stringify(this.processed),
       start: this.start,
-      treeStructure: JSON.stringify(treeStructure)
+      treeStructure: JSON.stringify(treeStructure),
     };
   }
 
   generateTreeStructure(node, visited) {
-    const res = {name: node};
+    const res = { name: node };
     if (visited.includes(node)) {
-      res['attributes'] = {
-        recursion : true
-      }
+      res["attributes"] = {
+        recursion: true,
+      };
       return res;
     }
     if (this.adjList?.get(node).length !== 0) {
       visited.push(node);
-      res['children'] = this.adjList?.get(node).map(value => {
-        this.generateTreeStructure(value, visited);
+      res["children"] = this.adjList?.get(node).map((value) => {
+        return this.generateTreeStructure(value, visited);
       });
       visited.pop();
     }
@@ -237,7 +237,6 @@ class TraceTree {
 }
 
 exports.TraceTree = TraceTree;
-
 
 /*
 funcName
