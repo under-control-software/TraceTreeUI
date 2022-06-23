@@ -21,5 +21,4 @@ npm run client
 # Server runs on http://localhost:5000 and client on http://localhost:3000
 ```
 
-## Note
-This app is taking longer than the plain Node.js app.
+Sourcegraph instance must be running at port 7080.
