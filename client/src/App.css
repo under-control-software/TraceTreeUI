@@ -5,16 +5,12 @@
   background-color: white;
 }
 
-/* .App-header {
-  background-color: #222;
-  height: 60px;
-  color: white;
-} */
 textarea:focus,
 input:focus {
   outline: none;
   border: 2px solid white;
 }
+
 .App-title {
   padding: 10px;
   padding-bottom: 0;
@@ -36,19 +32,10 @@ input:focus {
 .header-icon {
   color: rgb(38, 251, 38);
 }
+
 .left-box {
   flex: 2;
-
-  /* border: 1px solid grey; */
-  /* background: linear-gradient(
-    90deg,
-    hsla(191, 75%, 60%, 0.27) 0%,
-    rgba(33, 12, 172, 0.229) 100%
-  ); */
   border-radius: 5px;
-  /* make scrollable in both directions*/
-  /* overflow-y: scroll;
-  overflow-x: scroll; */
   height: 100%;
   width: 100%;
   position: relative;
@@ -58,14 +45,11 @@ input:focus {
   flex: 0.8;
   min-width: 20rem;
   overflow: auto;
-
-  /* background-color: #5399fa5a; */
   background: linear-gradient(
     60deg,
     hsl(191, 52%, 17%) 0%,
     rgb(22, 15, 74) 100%
   );
-  /* background: rgba(54, 51, 72, 0.641); */
   border: 1px solid grey;
   padding: 20px 8px;
   border-radius: 10px;
@@ -86,14 +70,6 @@ input:focus {
   display: none;
 }
 
-/* input {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 1.1em;
-  border-radius: 0px;
-  border: 1px solid black;
-  padding: 3px;
-} */
-
 .run-button {
   font-size: 1.1em;
   border: 1px solid hsl(191, 75%, 60%);
@@ -102,7 +78,6 @@ input:focus {
   padding: 0.435rem;
   cursor: pointer;
   color: white;
-
   padding-left: 12px;
   padding-right: 12px;
   border-bottom-right-radius: 0.4rem;
@@ -128,8 +103,6 @@ button:hover {
 }
 
 .search-cont {
-}
-.search-cont {
   padding: 0;
   padding-bottom: 2rem;
   padding-top: 5rem;
@@ -140,8 +113,7 @@ button:hover {
   justify-content: center;
   /* give a livitating shadow */
 }
-.search-cont {
-}
+
 .name-search-bar {
   width: 55%;
   padding: 0.8rem;
@@ -160,8 +132,6 @@ button:hover {
   width: 10%;
   min-width: 50px;
   border: 2px solid hsl(191, 75%, 60%);
-  /* border-top-right-radius: 0.2rem;
-  border-bottom-right-radius: 0.2rem; */
   background-color: rgba(255, 255, 255, 0.9);
   border-left: 1px solid hsl(191, 75%, 60%);
   color: rgb(100, 100, 100);
@@ -192,7 +162,6 @@ code-preview {
 .card {
   margin: 10px 5px;
   padding: 10px 20px;
-
   border-radius: 10px;
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
   transition: all 0.2s;
@@ -201,6 +170,7 @@ code-preview {
 .card-select {
   border: 2px solid #408efd;
 }
+
 .card:hover {
   box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
   transform: scale(1.01);
@@ -304,6 +274,7 @@ code-preview {
   right: 0px;
   z-index: 1000;
 }
+
 .index-item {
   display: flex;
   flex-direction: row;
@@ -311,6 +282,7 @@ code-preview {
   justify-content: flex-start;
   gap: 3px;
 }
+
 .index-item-icon {
   width: 16px;
   height: 16px;
@@ -388,13 +360,16 @@ code-preview {
   background-color: rgba(255, 255, 255, 0.6);
   color: #2246ce;
 }
+
 .nav-run-button:hover {
   background-color: rgba(255, 255, 255, 0.8);
 }
+
 /* chnage the color of placeholder text */
 .nav-name-search-bar::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
+
 .nav-num-bar::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
@@ -442,11 +417,13 @@ code-preview {
   border-radius: 1000px;
   margin-top: 0.3rem;
 }
+
 .selecter-button {
   background-color: white;
   padding: 0.1rem 0.3rem;
   border-radius: 1000px;
 }
+
 .selecter-selected {
   background-color: #408efd;
   color: white;
@@ -478,4 +455,11 @@ code-preview {
   left: 50%;
   transform: translate(-50%, -50%);
   display: inline-block;
+}
+
+.above-left-box {
+  height: 80vh;
+  display: flex;
+  width: 100%;
+  gap: 0;
 }

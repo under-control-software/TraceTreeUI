@@ -1,5 +1,19 @@
 //@ts-check
 
+/*
+funcName
+-> Use api for funcname
+
+-> no match
+  funcName,paramCount,parent-id '', -1,
+
+->single match
+  funcname,paramCount,parent-id:'',fileName,lineno.
+
+->multiple match
+  funcname,paramCount, parent-id, '', -1
+*/
+
 const { nanoid } = require("nanoid");
 const { getBody, getFunctionCalled } = require("../utils/getBody");
 
@@ -24,25 +38,21 @@ class TraceTree {
 
   returnData() {
     const treeStructure = this.generateTreeStructure(this.start, []);
-    console.log(this.adjList);
     return {
       adjList: JSON.stringify(Array.from(this.adjList.entries())),
       data: JSON.stringify(Array.from(this.data.entries())),
       registry: JSON.stringify(Array.from(this.registry.entries())),
       reverseReg: JSON.stringify(Array.from(this.reverseReg.entries())),
       processed: JSON.stringify(this.processed),
-      start: this.start,
       treeStructure: JSON.stringify(treeStructure),
+      start: this.start,
     };
   }
 
   generateTreeStructure(node, visited) {
+    const revNode = this.reverseReg.get(node);
     const res = {
-      name:
-        this.reverseReg.get(node).funcName +
-        "(" +
-        this.reverseReg.get(node).paramCount +
-        ")",
+      name: revNode.funcName + "(" + revNode.paramCount + ")",
       _id: node,
     };
     if (visited.includes(node)) {
@@ -258,17 +268,3 @@ class TraceTree {
 }
 
 exports.TraceTree = TraceTree;
-
-/*
-funcName
--> Use api for funcname
-
--> no match
-  funcName,paramCount,parent-id '', -1,
-
-->single match
-  funcname,paramCount,parent-id:'',fileName,lineno.
-
-->multiple match
-  funcname,paramCount, parent-id, '', -1
-*/

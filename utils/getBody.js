@@ -1,21 +1,10 @@
 const { fetchQuery } = require("./fetchQuery");
-const { queries } = require("../queries");
+const { queries } = require("./queries");
 
 async function getBody(funcName, paramCount) {
   if (!/^[a-zA-Z_]+$/.test(funcName) || paramCount < 0) {
     return [];
   }
-  // ':[~[\\s*@?\\w+\\s*]+],'
-  // :[~[\s*@?\w+<?\w*,?\s\w*>?\s*]+]
-  // paramRegex = '';
-  // for (let i = 1; i<paramCount; i++) {
-  //   paramRegex += ':[~[\\s*@?\\w+\\s*]+],';
-  // }
-  // if (paramCount > 0) {
-  //   paramRegex += ':[~[\\s*@?\\w+\\s*]+]';
-  // } else {
-  //   paramRegex += ':[~\\s*]'
-  // }
 
   query = `
     context:global repo:^github.com/spring-projects/spring-framework$ 
@@ -29,7 +18,6 @@ async function getBody(funcName, paramCount) {
   res = res.filter((match) => {
     return paramCheck(match.lineMatches[0].preview, paramCount, funcName);
   });
-  console.log(res, query);
   return res;
 }
 

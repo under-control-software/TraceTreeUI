@@ -1,22 +1,23 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import "./App.css";
-import { Radio, Switch } from "antd";
 import Graph from "react-graph-network";
-import footer from "./assets/footer.png";
 import Tree from "react-d3-tree";
 import LoadingSpin from "react-loading-spin";
+import { Radio } from "antd";
 import {
-  MagnifyingGlass,
   TreeStructure,
-  File,
   ArrowRight,
   CaretRight,
   CaretLeft,
   TreeEvergreen,
   Graph as GraphIcon,
   Tree as TreeIcon,
-  X,
 } from "phosphor-react";
+import MessageBanner from "./components/MessageBanner";
+import Legend from "./components/Legend";
+import Footer from "./components/Footer";
+import Spinner from "./components/Spinner";
+import Options from "./components/Options";
 
 const Line = ({ link, ...restProps }) => {
   return <line {...restProps} stroke="grey" />;
@@ -34,7 +35,6 @@ class App extends Component {
       reverseReg: new Map(),
       start: null,
       nodes: null,
-      hover: false,
       curNode: null,
       option: null,
       selectValid: true,
@@ -47,90 +47,16 @@ class App extends Component {
       messageShowing: true,
     };
 
-    this.run = this.run.bind(this);
-    this.Node = this.Node.bind(this);
-    this.display = this.display.bind(this);
+    this.onChangeRadio = this.onChangeRadio.bind(this);
     this.displayTreeNode = this.displayTreeNode.bind(this);
-    this.onChange = this.onChange.bind(this);
+    this.setInterval = this.setInterval.bind(this);
+    this.display = this.display.bind(this);
+    this.run = this.run.bind(this);
     this.changeNode = this.changeNode.bind(this);
+    this.fetchCall = this.fetchCall.bind(this);
   }
 
-  changeNode = (e) => {
-    console.log(e);
-    const data = this.state.data.get(e._id);
-    console.log(data);
-    if (
-      (e.attributes && e.attributes.Branch) ||
-      (e.attributes && e.attributes.Definition)
-    ) {
-      this.setState({
-        option: null,
-      });
-      this.setState({
-        displayBox: false,
-      });
-      this.setState({
-        viewRight: false,
-      });
-    } else {
-      if (data.length === 1) {
-        this.setState({
-          option: data[0],
-        });
-      } else {
-        this.setState({
-          option: null,
-        });
-      }
-      this.setState({
-        displayBox: true,
-      });
-      if (data) {
-        this.displayTreeNode(e);
-      } else {
-        this.display(null);
-      }
-      this.setState({
-        viewRight: true,
-      });
-      const int = setInterval(() => {
-        if (data.length === 1 && !this.state.processed.includes(e._id)) {
-          this.selectOption();
-          clearInterval(int);
-        }
-      }, 300);
-    }
-  };
-
-  displayTreeNode = (e) => {
-    const node = {
-      id: e._id,
-      data: this.state.data.get(e._id),
-    };
-    this.display(node);
-  };
-
-  display = (node) => {
-    if (!node) {
-      this.setState({
-        curNode: null,
-      });
-      return;
-    }
-    this.setState({
-      curNode: node,
-      selectValid:
-        node.data.length === 0 || this.state.processed.includes(node.id)
-          ? false
-          : true,
-      radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
-    });
-  };
-
   Node = ({ node }) => {
-    // console.log(node);
-    const fontSize = 14;
-    const radius = 10;
     let color = node.start ? "red" : "black";
     if (!this.state.processed.includes(node.id)) {
       color = "yellow";
@@ -140,10 +66,8 @@ class App extends Component {
     }
 
     const sizes = {
-      radius: radius,
-      textSize: fontSize,
-      textX: radius * 1.5,
-      textY: radius / 2,
+      radius: 10,
+      textSize: 14,
     };
 
     return (
@@ -151,35 +75,13 @@ class App extends Component {
         style={{ cursor: "pointer" }}
         id="node"
         onClick={() => {
-          if (node.data.length === 1) {
-            this.setState({
-              option: node.data[0],
-            });
-          } else {
-            this.setState({
-              option: null,
-            });
-          }
           this.setState({
+            option: node.data.length === 1 ? node.data[0] : null,
             displayBox: true,
-          });
-          if (node.data) {
-            this.display(node);
-          } else {
-            this.display(null);
-          }
-          this.setState({
             viewRight: true,
           });
-          const int = setInterval(() => {
-            if (
-              node.data.length === 1 &&
-              !this.state.processed.includes(node.id)
-            ) {
-              this.selectOption();
-              clearInterval(int);
-            }
-          }, 300);
+          this.display(node);
+          this.setInterval(node.data, node.id);
         }}
       >
         <circle fill={`${color}`} stroke="black" r={sizes.radius} />
@@ -195,6 +97,59 @@ class App extends Component {
   scrollToMyRef = () =>
     window.scrollTo({ top: this.myRef.current.offsetTop, behavior: "smooth" });
 
+  onChangeRadio = (e) => {
+    this.setState({
+      option: e.target.value,
+    });
+  };
+
+  displayTreeNode = (e) => {
+    const node = {
+      id: e._id,
+      data: this.state.data.get(e._id),
+    };
+    this.display(node);
+  };
+
+  setInterval = (data, id) => {
+    const int = setInterval(() => {
+      if (data.length === 1 && !this.state.processed.includes(id)) {
+        this.selectOption();
+        clearInterval(int);
+      }
+    }, 300);
+  };
+
+  display = (node) => {
+    this.setState({
+      curNode: node,
+      selectValid:
+        node.data.length === 0 || this.state.processed.includes(node.id)
+          ? false
+          : true,
+      radioValue: node.data && node.data.length == 1 ? node.data[0] : "",
+    });
+  };
+
+  changeNode = (e) => {
+    const data = this.state.data.get(e._id);
+    if (e.attributes && (e.attributes.Branch || e.attributes.Definition)) {
+      this.setState({
+        option: null,
+        displayBox: false,
+        viewRight: false,
+      });
+    } else {
+      this.setState({
+        option: data.length === 1 ? data[0] : null,
+        displayBox: true,
+        viewRight: true,
+      });
+      this.displayTreeNode(e);
+      this.setInterval(data, e._id);
+    }
+  };
+
   run() {
     var funcName = document.getElementById("func-name").value;
     // funcName = "getAccessControlAllowCredentials";
@@ -209,22 +164,25 @@ class App extends Component {
       alert("Please enter valid number of arguments for the function");
       return;
     }
+    const body = { name: funcName, paramCount: numArgs };
+    this.fetchCall(body, "/api/generategraph");
+  }
+
+  fetchCall = (body, url) => {
     this.setState({
-      message: "Please wait...",
       displayBox: false,
+      message: "Please wait...",
     });
 
-    fetch("/api/generategraph", {
+    fetch(url, {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: funcName, paramCount: numArgs }),
+      body: JSON.stringify(body),
     })
-      .then((res) => {
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
         this.setState({
           message:
@@ -234,8 +192,8 @@ class App extends Component {
           data: new Map(JSON.parse(data.data)),
           reverseReg: new Map(JSON.parse(data.reverseReg)),
           processed: JSON.parse(data.processed),
-          start: data.start,
           treeStructure: JSON.parse(data.treeStructure),
+          start: data.start,
         });
         const nodes = {
           nodes: [],
@@ -254,24 +212,14 @@ class App extends Component {
         });
         this.setState({
           nodes: nodes,
-        });
-        this.setState({
           viewRight: false,
         });
         this.scrollToMyRef();
-        console.log(this.state.nodes);
       });
-  }
-
-  onChange = (e) => {
-    console.log(e.target.value);
-    this.setState({
-      option: e.target.value,
-    });
   };
 
-  selectOption = (opt = null) => {
-    if (!this.state.option && !opt) {
+  selectOption = () => {
+    if (!this.state.option) {
       alert("Please select an option");
       return;
     }
@@ -287,65 +235,18 @@ class App extends Component {
       });
     }
 
-    this.setState({
-      displayBox: false,
-      message: "Please wait...",
-    });
-
-    fetch("/api/expandgraph", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        option: JSON.stringify(this.state.option),
-        adjList: JSON.stringify(Array.from(this.state.adjList.entries())),
-        data: JSON.stringify(Array.from(this.state.data.entries())),
-        registry: JSON.stringify(Array.from(this.state.registry.entries())),
-        reverseReg: JSON.stringify(Array.from(this.state.reverseReg.entries())),
-        processed: JSON.stringify(this.state.processed),
-        paramCount: this.state.reverseReg.get(this.state.curNode.id).paramCount,
-        start: this.state.start,
-        parent: parentid,
-      }),
-    })
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        this.setState({
-          message:
-            "Graph Generated. Click on the nodes to uncover more details.",
-          adjList: new Map(JSON.parse(data.adjList)),
-          registry: new Map(JSON.parse(data.registry)),
-          data: new Map(JSON.parse(data.data)),
-          reverseReg: new Map(JSON.parse(data.reverseReg)),
-          processed: JSON.parse(data.processed),
-          treeStructure: JSON.parse(data.treeStructure),
-        });
-        const nodes = {
-          nodes: [],
-          links: [],
-        };
-        this.state.adjList.forEach((value, key) => {
-          nodes.nodes.push({
-            id: key,
-            name: this.state.reverseReg.get(key),
-            data: this.state.data.get(key),
-            start: this.state.start === key,
-          });
-          value.map((e) => {
-            nodes.links.push({ source: key, target: e });
-          });
-        });
-        this.setState({
-          nodes: nodes,
-        });
-        this.setState({
-          viewRight: false,
-        });
-      });
+    const body = {
+      option: JSON.stringify(this.state.option),
+      adjList: JSON.stringify(Array.from(this.state.adjList.entries())),
+      data: JSON.stringify(Array.from(this.state.data.entries())),
+      registry: JSON.stringify(Array.from(this.state.registry.entries())),
+      reverseReg: JSON.stringify(Array.from(this.state.reverseReg.entries())),
+      processed: JSON.stringify(this.state.processed),
+      paramCount: this.state.reverseReg.get(this.state.curNode.id).paramCount,
+      start: this.state.start,
+      parent: parentid,
+    };
+    this.fetchCall(body, "/api/expandgraph");
   };
 
   render() {
@@ -375,10 +276,6 @@ class App extends Component {
             <div
               className={`search-cont ${this.state.nodes && "nav-search-cont"}`}
             >
-              {/* <label>
-                Function name: <span style={{ color: "white" }}>..</span>
-              </label> */}
-
               <input
                 type="text"
                 size={31}
@@ -389,9 +286,6 @@ class App extends Component {
                 placeholder="Function Name"
               />
 
-              {/* <label>
-              Number of arguments: <span style={{ color: "white" }}>..</span>
-            </label> */}
               <input
                 type="number"
                 size={8}
@@ -423,27 +317,18 @@ class App extends Component {
             </div>
           </div>
 
-          {!this.state.nodes && (
-            <div className="footer-image-cont">
-              <img src={footer} alt="footer" className="footer-image" />
-            </div>
-          )}
+          {!this.state.nodes && <Footer />}
         </div>
 
         {this.state.nodes && this.state.messageShowing && (
-          <div className={"message-banner"}>
-            <div className="message-text">{this.state.message}</div>
-            <div
-              className="cross-button"
-              onClick={() => {
-                this.setState({
-                  messageShowing: false,
-                });
-              }}
-            >
-              <X size={20} weight="duotone" />
-            </div>
-          </div>
+          <MessageBanner
+            message={this.state.message}
+            showMessage={(value) => {
+              this.setState({
+                messageShowing: value,
+              });
+            }}
+          />
         )}
 
         {!this.state.nodes ? null : (
@@ -472,14 +357,7 @@ class App extends Component {
               </div>
             </div>
 
-            <div
-              style={{
-                height: "80vh",
-                display: "flex",
-                width: "100%",
-                gap: "0",
-              }}
-            >
+            <div className="above-left-box">
               {this.state.displayGraph ? (
                 <div
                   className="left-box"
@@ -489,48 +367,9 @@ class App extends Component {
                     letterSpacing: "1px",
                   }}
                 >
-                  <div className="index-box">
-                    <div className="index-item">
-                      <div
-                        className="index-item-icon"
-                        style={{ backgroundColor: "red" }}
-                      ></div>
-                      <div className="index-item-text">Root-Node</div>
-                    </div>
-
-                    <div className="index-item">
-                      <div
-                        className="index-item-icon"
-                        style={{ backgroundColor: "yellow" }}
-                      ></div>
-                      <div className="index-item-text">Expandable Nodes</div>
-                    </div>
-                    <div className="index-item">
-                      <div
-                        className="index-item-icon"
-                        style={{ backgroundColor: "black" }}
-                      ></div>
-                      <div className="index-item-text">
-                        Intermediate or Terminal Nodes
-                      </div>
-                    </div>
-                    <div className="index-item">
-                      <div
-                        className="index-item-icon"
-                        style={{ backgroundColor: "blue" }}
-                      ></div>
-                      <div className="index-item-text">
-                        Function Declaration do not exist in repo.
-                      </div>
-                    </div>
-                  </div>
+                  <Legend />
                   {this.state.message === "Please wait..." ? (
-                    <div className="spinner-left">
-                      <LoadingSpin
-                        primaryColor={"#408efd"}
-                        secondaryColor={"hsl(191, 75%, 60%)"}
-                      />
-                    </div>
+                    <Spinner />
                   ) : (
                     <Graph
                       data={this.state.nodes}
@@ -555,17 +394,11 @@ class App extends Component {
                   }}
                 >
                   {this.state.message === "Please wait..." ? (
-                    <div className="spinner-left">
-                      <LoadingSpin
-                        primaryColor={"#408efd"}
-                        secondaryColor={"hsl(191, 75%, 60%)"}
-                      />
-                    </div>
+                    <Spinner />
                   ) : (
                     <Tree
                       data={this.state.treeStructure}
                       orientation="vertical"
-                      circleRadius="10"
                       onClick={this.changeNode}
                       collapsible={false}
                       separation={{
@@ -621,61 +454,22 @@ class App extends Component {
                       <div className="radio-buttons">
                         <br></br>
                         <Radio.Group
-                          onChange={this.onChange}
+                          onChange={this.onChangeRadio}
                           value={this.state.radioValue}
                         >
                           {this.state.curNode
                             ? this.state.curNode.data.map((e, ind) => {
                                 return (
-                                  <div
-                                    style={{
-                                      border:
-                                        this.state.radioValue === e
-                                          ? "2px solid white"
-                                          : "",
-                                      // add a glowing shadow
-                                      boxShadow:
-                                        this.state.radioValue === e
-                                          ? "0px 0px 10px white"
-                                          : "",
+                                  <Options
+                                    radioValue={this.state.radioValue}
+                                    e={e}
+                                    ind={ind}
+                                    setOption={(opt) => {
+                                      this.setState({
+                                        radioValue: opt,
+                                      });
                                     }}
-                                    className={`card card-${
-                                      Math.floor(ind % 5) + 1
-                                    }`}
-                                  >
-                                    <Radio
-                                      value={e}
-                                      style={{ cursor: "pointer" }}
-                                      onClick={() => {
-                                        this.setState({
-                                          radioValue: e,
-                                        });
-                                      }}
-                                    >
-                                      {" "}
-                                      <div className="file-name-cont">
-                                        <File
-                                          size={18}
-                                          className="card__icon"
-                                          weight="bold"
-                                        />{" "}
-                                        {/* trim the file to max of length 30 */}
-                                        {e.file.substring(0, 30)}
-                                      </div>
-                                      <div className="file-link-cont">
-                                        <span className="preview">
-                                          {e.preview}...
-                                        </span>
-                                        <a
-                                          className="code-prev"
-                                          href={e.url}
-                                          target="_blank"
-                                        >
-                                          <ArrowRight size={20} weight="bold" />
-                                        </a>
-                                      </div>
-                                    </Radio>
-                                  </div>
+                                  />
                                 );
                               })
                             : null}
@@ -695,14 +489,7 @@ class App extends Component {
                       </div>
                     </div>
                   )}
-                {this.state.message === "Please wait..." && (
-                  <div className="spinner-left">
-                    <LoadingSpin
-                      primaryColor={"#408efd"}
-                      secondaryColor={"hsl(191, 75%, 60%)"}
-                    />
-                  </div>
-                )}
+                {this.state.message === "Please wait..." && <Spinner />}
               </div>
             </div>
           </div>
