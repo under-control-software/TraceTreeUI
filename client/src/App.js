@@ -205,6 +205,10 @@ class App extends Component {
       alert("Please enter a function name");
       return;
     }
+    if (isNaN(numArgs) || numArgs < 0) {
+      alert("Please enter valid number of arguments for the function");
+      return;
+    }
     this.setState({
       message: "Please wait...",
       displayBox: false,
