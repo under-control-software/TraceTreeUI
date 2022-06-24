@@ -1,7 +1,7 @@
 const fetch = require("node-fetch");
 
 const fetchQuery = (query, variables) => {
-  return fetch("http://127.0.0.1:7080/.api/graphql", {
+  return fetch(`${process.env.SOURCEGRAPH_ENDPOINT}/.api/graphql`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

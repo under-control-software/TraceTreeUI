@@ -7,7 +7,7 @@ async function getBody(funcName, paramCount) {
   }
 
   query = `
-    context:global repo:^github.com/spring-projects/spring-framework$ 
+    context:global repo:^github.com/${process.env.REPOSITORY}$ 
     :[~\\s]${funcName}(...) {...}
     -file:.*test.*
     patternType:structural lang:Java case:yes count:all
