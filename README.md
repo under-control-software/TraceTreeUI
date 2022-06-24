@@ -22,3 +22,12 @@ npm run client
 ```
 
 Sourcegraph instance must be running at port 7080.
+
+Currently we have hardcoded it to search in [spring-projects/spring-framework](https://github.com/spring-projects/spring-framework) codebase.
+
+Add this github repository in your sourcegraph instance.
+
+Provide the access token of sourcegraph in '.env' file (as below) and keep it in root directory of the project
+```
+ACCESS_TOKEN=<Your sourcegraph access token>
+```
