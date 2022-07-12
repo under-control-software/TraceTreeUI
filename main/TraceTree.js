@@ -36,7 +36,7 @@ class TraceTree {
         }
     }
 
-    returnData() {
+    returnData(id = null) {
         const treeStructure = this.generateTreeStructure(this.start, []);
         return {
             adjList: JSON.stringify(Array.from(this.adjList.entries())),
@@ -61,6 +61,7 @@ class TraceTree {
             };
             return res;
         }
+        let flag = false;
         if (this.adjList?.get(node).length !== 0) {
             visited.push(node);
             res["children"] = this.adjList?.get(node).map((value) => {
@@ -69,11 +70,17 @@ class TraceTree {
             visited.pop();
         } else {
             if (this.data.get(node).length === 0) {
+                flag = true;
                 res["attributes"] = {
                     Definition: "none",
                 };
+            } else if (this.processed.includes(node)) {
+                res["attributes"] = {
+                    Children: "none",
+                };
             }
         }
+
         return res;
     }
 
@@ -84,6 +91,7 @@ class TraceTree {
         const getBodyResults = await Promise.all(
             funcCalled.map((func) => getBody(func.funcName, func.paramCount))
         );
+
         for (let index in funcCalled) {
             await this.generateTree(
                 funcCalled[index].funcName,
@@ -136,7 +144,7 @@ class TraceTree {
 
         if (
             this.registry?.get(JSON.stringify(regobj)) &&
-            this.processed.includes[this.registry?.get(JSON.stringify(regobj))]
+            this.processed.includes(this.registry?.get(JSON.stringify(regobj)))
         ) {
             if (parent !== "") {
                 const newid = this.registry?.get(JSON.stringify(regobj));
